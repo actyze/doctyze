@@ -1,0 +1,77 @@
+name: "Doctyze PR Review"
+author: "Actyze"
+description: "Enforces documentation-coupling on every PR. Suggests doc updates when code changes; can block merge."
+branding:
+  icon: "book-open"
+  color: "blue"
+
+inputs:
+  mode:
+    description: "Enforcement mode: warn-only | block-required | block-all"
+    required: false
+    default: "warn-only"
+  llm:
+    description: "LLM provider: claude | openai | gemini | bedrock | azure | ollama"
+    required: false
+    default: "claude"
+  anthropic-api-key:
+    description: "Anthropic API key (when llm=claude)."
+    required: false
+  openai-api-key:
+    description: "OpenAI API key (when llm=openai)."
+    required: false
+  google-api-key:
+    description: "Google API key (when llm=gemini)."
+    required: false
+  config:
+    description: "Path to .doctyze.yaml (default: .doctyze.yaml at repo root)."
+    required: false
+    default: ".doctyze.yaml"
+  stack-profile:
+    description: "Override stack profile: modern | legacy."
+    required: false
+  exclude-paths:
+    description: "Comma-separated glob patterns to skip (e.g., 'vendor/**,test/**')."
+    required: false
+
+outputs:
+  suggestions-count:
+    description: "Number of review suggestions posted on the PR."
+  required-changes:
+    description: "Number of changes that block merge (only > 0 when mode != warn-only)."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check out code with history
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Install Doctyze (latest)
+      shell: bash
+      run: pip install actyze-doctyze[llm]
+
+    - name: Run Doctyze PR analysis
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
+        OPENAI_API_KEY: ${{ inputs.openai-api-key }}
+        GOOGLE_API_KEY: ${{ inputs.google-api-key }}
+        DOCTYZE_MODE: ${{ inputs.mode }}
+        DOCTYZE_LLM: ${{ inputs.llm }}
+        DOCTYZE_CONFIG: ${{ inputs.config }}
+        DOCTYZE_STACK_PROFILE: ${{ inputs.stack-profile }}
+        DOCTYZE_EXCLUDE_PATHS: ${{ inputs.exclude-paths }}
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        doctyze pr-review run \
+          --pr-number "${{ github.event.pull_request.number }}" \
+          --base-sha "${{ github.event.pull_request.base.sha }}" \
+          --head-sha "${{ github.event.pull_request.head.sha }}"

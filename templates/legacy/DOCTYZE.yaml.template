@@ -1,0 +1,39 @@
+# Doctyze project metadata for {{SERVICE_NAME}} (legacy stack).
+# Tells Doctyze how to ingest, verify, and round-trip with the legacy SCM.
+# Confidence: 🟡 INFERRED. Verify after the first scan.
+
+apiVersion: doctyze/v1
+kind: LegacyProject
+
+metadata:
+  service: "{{SERVICE_NAME}}"
+  stack: "{{STACK}}"             # cobol | abap | ibm-i-rpg | vb6 | dotnet-framework | powerbuilder | delphi
+  lifecycle: "{{LIFECYCLE}}"     # active | maintenance | migrating | eol
+
+ingestion:
+  source: "{{SCM_TYPE}}"         # endevor | changeman | librarian | abapgit | arcad | vss | git
+  connection: "{{SCM_CONNECTION}}"
+  refresh_schedule: "{{REFRESH}}"  # e.g., "0 2 * * *"  for nightly
+
+  # Round-trip back to source SCM (writing changes from git to mainframe).
+  # null means one-way ingestion only.
+  round_trip:
+    enabled: false
+    on_branch: "main"
+    requires_approval: true
+
+extraction:
+  retain_source_locally: true
+  llm_provider: "{{LLM_PROVIDER}}"  # claude | openai | gemini | bedrock | azure | ollama
+  llm_model: "{{LLM_MODEL}}"
+
+modernization:
+  target_platform: "{{TARGET_PLATFORM}}"  # cloud-native | hybrid | none
+  migration_plan: "docs/modernization/migration-tracker.md"
+
+owners:
+  team: "{{OWNER_TEAM}}"
+  primary_contact: "{{PRIMARY_CONTACT}}"
+  retiring_engineers:
+    # Time-bounded: capture knowledge before these people leave.
+    # - { name: "Jane Doe", retirement_horizon: "2026-12" }

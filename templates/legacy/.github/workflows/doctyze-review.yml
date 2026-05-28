@@ -1,0 +1,39 @@
+# Doctyze PR review — legacy stack variant.
+#
+# Same engine as modern stack but with legacy-specific rules:
+#   - changes to copybooks require the copybook-catalog to be updated
+#   - changes to programs in docs/programs/ require the program-doc updated
+#   - changes to JCL / job scheduler entries require docs/jobs/ updated
+#   - any change to a "do-not-touch" program (flagged in DOCTYZE.yaml) requires
+#     a documented approval from the named senior operator
+#
+# Modes: warn-only | block-required | block-all (default: warn-only)
+#
+# See: https://github.com/actyze/doctyze
+
+name: Doctyze PR Review (Legacy)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  doctyze-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Doctyze PR review (legacy)
+        uses: actyze/doctyze-pr-review-action@v1
+        with:
+          mode: warn-only
+          stack-profile: legacy
+          llm: claude
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          config: DOCTYZE.yaml

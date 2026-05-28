@@ -1,0 +1,35 @@
+# Doctyze PR review — enforces documentation-coupling on every PR.
+#
+# When a PR is opened, the action analyzes the diff and determines whether
+# documentation in this repo needs updating. Suggestions are posted as PR
+# review comments. Depending on `mode`, the action can block merge.
+#
+# Modes: warn-only | block-required | block-all (default: warn-only)
+#
+# See: https://github.com/actyze/doctyze
+
+name: Doctyze PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  doctyze-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0    # Doctyze needs git history for diff analysis
+
+      - name: Doctyze PR review
+        uses: actyze/doctyze-pr-review-action@v1
+        with:
+          mode: warn-only
+          llm: claude
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          config: .doctyze.yaml
