@@ -304,11 +304,29 @@ doctyze/                               this repo
 | **v0.3** (5–6 months) | Add IBM i RPG, VB6, .NET Framework · Interview-augmented ADR archaeology · Bitbucket / Azure DevOps |
 | **v1.0** | PowerBuilder, Delphi · plugin SDK · candidate for AAIF / CNCF Sandbox |
 
+## See it in action
+
+A complete worked example lives at
+[`examples/python-fastapi-orders/`](examples/python-fastapi-orders/) — a small
+FastAPI orders service with:
+
+- 3 hand-authored ADRs in MADR format (including a non-obvious **fail-open**
+  decision that AI agents *must not "fix"*)
+- 2 canonical skills under `docs/skills/`
+- 1 canonical runbook with frontmatter that drives Holmes YAML generation
+- The full set of vendor files (`.claude/skills/`, `.cursor/rules/`,
+  `.github/copilot-instructions.md`, `.holmes/runbooks/`) rendered from
+  the canonical sources
+
+Read the example's [README](examples/python-fastapi-orders/README.md) to see
+how the canonical-source model plays out in practice.
+
 ## Status
 
-**Pre-alpha. Day-1 commit.** Scaffolder skeleton, templates, and PR review
-GitHub Action are in place; LLM-driven extraction is the immediate next
-milestone. Track progress in [GitHub Issues](https://github.com/actyze/doctyze/issues).
+**Pre-alpha. v0.0.2.** Scaffolder, templates, renderer pipeline, drift-check
+Action, and one worked example are all in place. LLM-driven extraction is the
+next milestone (v0.1). Track progress in
+[GitHub Issues](https://github.com/actyze/doctyze/issues).
 
 ## Contributing
 

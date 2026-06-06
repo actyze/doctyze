@@ -1,0 +1,19 @@
+%% System-context view for orders-api.
+%% Renders inline on GitHub. Source-of-truth: ../workspace.dsl
+
+graph LR
+    storefront(["🛒 Storefront"])
+    orders["orders-api"]
+    postgres[("Postgres<br/>orders DB")]
+    pricing[("Pricing service")]
+    inventory[("Inventory service")]
+    events[("Event bus<br/>(order.placed)")]
+
+    storefront -->|POST /orders| orders
+    orders -->|JDBC| postgres
+    orders -->|HTTP| pricing
+    orders -->|HTTP| inventory
+    orders -->|publish| events
+
+    classDef external fill:#888,color:#fff
+    class pricing,inventory,events external
