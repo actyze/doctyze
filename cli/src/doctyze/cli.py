@@ -43,8 +43,10 @@ from rich.console import Console
 from rich.table import Table
 
 from doctyze import __version__
+from doctyze import llm as llm_module
 from doctyze import renderers
 from doctyze.detector import detect_stack
+from doctyze.extractor import extract_and_fill
 from doctyze.scaffolder import Scaffolder
 
 console = Console()
@@ -78,7 +80,15 @@ def main() -> None:
 @click.option("--stack", default=None, help="Override stack auto-detection.")
 @click.option("--dry-run", is_flag=True, help="Show what would be generated without writing files.")
 @click.option("--path", default=".", help="Path to the repository to scaffold.")
-@click.option("--llm", default=None, help="LLM provider (claude|openai|gemini|bedrock|azure|ollama).")
+@click.option(
+    "--llm",
+    default=None,
+    help=(
+        "LLM backend for placeholder extraction. "
+        "claude | openai | ollama | none. "
+        "Default: auto-detect from env (ANTHROPIC_API_KEY → claude, OPENAI_API_KEY → openai, OLLAMA_HOST → ollama, else none)."
+    ),
+)
 def init(stack: str | None, dry_run: bool, path: str, llm: str | None) -> None:
     """Scan repo, detect stack, emit canonical documentation structure."""
     repo = Path(path).resolve()
@@ -120,9 +130,28 @@ def init(stack: str | None, dry_run: bool, path: str, llm: str | None) -> None:
     scaffolder.write(plan)
     console.print(f"[green]✓[/green] generated {len(plan)} files")
 
-    # After scaffolding, render vendor-specific files for the configured
-    # agent targets so the repo works out-of-the-box with Claude Code,
-    # Cursor, Copilot, Holmes, etc.
+    # LLM-driven placeholder extraction. Walks the freshly-scaffolded
+    # repo, fills in {{SERVICE_NAME}}/{{ONE_PARAGRAPH_PURPOSE}}/etc. with
+    # content extracted from the actual repo. Confidence markers stamped
+    # per the LLM's confidence per placeholder.
+    backend = llm_module.get(llm)
+    console.print(
+        f"\nExtracting content via LLM backend: [cyan]{backend.name}[/cyan]  "
+        f"({backend.description})"
+    )
+    try:
+        summary = extract_and_fill(repo, detection.stack, backend)
+        console.print(
+            f"[green]✓[/green] filled {summary.placeholders_filled} placeholder(s), "
+            f"flagged {summary.placeholders_gap} as 🔴 GAP, "
+            f"touched {summary.files_touched} file(s)"
+        )
+    except RuntimeError as exc:
+        console.print(f"[yellow]⚠ extraction skipped:[/yellow] {exc}")
+        console.print("  Placeholders remain in the generated files for human filling.")
+
+    # After scaffolding + extraction, render vendor-specific files for
+    # the configured agent targets so the repo works out-of-the-box.
     targets = _load_agent_targets(repo)
     if targets:
         console.print(
