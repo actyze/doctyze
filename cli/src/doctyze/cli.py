@@ -108,7 +108,7 @@ def init(stack: str | None, dry_run: bool, path: str, llm: str | None) -> None:
             "Re-run with [bold]--stack=<name>[/bold] to override."
         )
 
-    scaffolder = Scaffolder(repo=repo, stack=detection.stack, llm=llm)
+    scaffolder = Scaffolder(repo=repo, stack=detection.stack)
     plan = scaffolder.plan()
 
     table = Table(title="Files to be generated", show_lines=False)

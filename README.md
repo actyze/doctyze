@@ -277,22 +277,22 @@ doctyze/                               this repo
 │
 ├── cli/                               ← `doctyze` CLI (Python)
 │   └── src/doctyze/
+│       ├── cli.py                     ← Click command surface
+│       ├── detector.py                ← stack detection from file signatures
+│       ├── scaffolder.py              ← template → repo copier
+│       ├── extractor.py               ← LLM-driven placeholder filling
+│       ├── llm/                       ← pluggable LLM backends (claude/openai/ollama/none)
+│       └── renderers/                 ← canonical → vendor-format renderers
+│                                       (claude, cursor, copilot, windsurf, holmes)
 │
-├── templates/                         ← canonical structures
+├── templates/                         ← canonical structures emitted by `doctyze init`
 │   ├── modern/                        ← Java/Python/Node/React/Go
 │   └── legacy/                        ← COBOL/ABAP/IBM i/VB6/.NET Fx/PB/Delphi
 │
-├── extractors/                        ← language-specific content extractors
-│   ├── modern/{java-spring,python,node-react,go}
-│   └── legacy/{cobol,abap,ibm-i-rpg,vb6,dotnet-framework,powerbuilder,delphi}
-│
-├── pr-review-action/                  ← the GitHub Action
-│
-├── skills-library/                    ← canonical SKILL.md files shipped per stack
-│   ├── modern/
-│   └── legacy/
+├── pr-review-action/                  ← the GitHub Action (composite, action.yml)
 │
 └── examples/                          ← end-to-end demo repos
+    └── python-fastapi-orders/         ← the worked example
 ```
 
 ## Roadmap

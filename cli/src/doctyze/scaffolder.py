@@ -1,16 +1,16 @@
 """Scaffolder — copies the canonical template into the user's repo.
 
 Produces a plan first (read-only), then writes when confirmed. Every
-generated artifact is stamped with a confidence marker. LLM-driven content
-extraction (filling in placeholders) is a future milestone; v0.1 emits
-stubs with 🟡 INFERRED / 🔴 GAP markers everywhere.
+generated artifact is stamped with an initial confidence marker; LLM-driven
+extraction (in :mod:`doctyze.extractor`) fills the placeholders afterward and
+can revise the markers based on extracted confidence.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 
-from doctyze.detector import LEGACY_STACKS, MODERN_STACKS
+from doctyze.detector import MODERN_STACKS
 
 
 @dataclass(frozen=True)
@@ -21,10 +21,9 @@ class PlanEntry:
 
 
 class Scaffolder:
-    def __init__(self, repo: Path, stack: str, llm: str | None = None) -> None:
+    def __init__(self, repo: Path, stack: str) -> None:
         self.repo = repo
         self.stack = stack
-        self.llm = llm
         self.family = "modern" if stack in MODERN_STACKS else "legacy"
         self.template_root = self._locate_template_root()
 
@@ -101,13 +100,22 @@ class Scaffolder:
         raise FileNotFoundError(f"no source template for {target_rel}")
 
     def _classify(self, rel: Path) -> str:
+        """Map a template path to a human-readable artifact kind.
+
+        Vendor-output paths (.claude/, .cursor/, .holmes/, .windsurfrules,
+        .github/copilot-instructions.md) are intentionally absent — those
+        are produced by :mod:`doctyze.renderers` from canonical sources,
+        not scaffolded directly.
+        """
         s = str(rel)
         if s.startswith("docs/architecture/decisions/"):
             return "ADR"
         if s.startswith("docs/architecture/diagrams/"):
             return "diagram"
+        if s.startswith("docs/skills/"):
+            return "skill (canonical)"
         if s.startswith("docs/runbooks/"):
-            return "runbook"
+            return "runbook (canonical)"
         if s.startswith("docs/specs/"):
             return "spec"
         if s.startswith("docs/investigations/"):
@@ -122,14 +130,8 @@ class Scaffolder:
             return "job doc"
         if s.startswith("docs/interfaces/"):
             return "interface doc"
-        if s.startswith(".claude/skills/"):
-            return "skill"
-        if s.startswith(".cursor/rules/"):
-            return "rule (Cursor)"
         if s.startswith(".github/workflows/"):
             return "GitHub Action"
-        if s.startswith(".holmes/runbooks/"):
-            return "Holmes runbook"
         if s == "AGENTS.md.template" or s == "AGENTS.md":
             return "AGENTS.md"
         if s == "README.md":
@@ -141,8 +143,10 @@ class Scaffolder:
     def _confidence_for(self, rel: Path) -> str:
         """Initial confidence marker for a generated file.
 
-        In v0.1 (no LLM extraction yet), most artifacts ship as 🟡 INFERRED
-        or 🔴 GAP. ADR-0001 (the meta-decision to use ADRs) is 🟢 CONFIRMED.
+        Most artifacts ship as 🟡 INFERRED so the LLM extractor knows to fill
+        them, or 🔴 GAP where human input is required (e.g., ADR archaeology
+        pending-questions). ADR-0001 is self-evidently 🟢 CONFIRMED (the act
+        of having an ADRs folder *is* the decision the ADR describes).
         """
         s = str(rel)
         if "0001-record-architecture-decisions" in s:

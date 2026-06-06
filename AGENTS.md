@@ -57,6 +57,28 @@ When contributing:
 - **The PR review GitHub Action runs `doctyze render --check`** to fail
   PRs where generated files have drifted from canonical sources.
 
+## Cleanup rule (load-bearing — read this before every PR)
+
+**Whenever something is changed, the corresponding now-redundant logic,
+files, and folders must be removed in the same PR.** Same PR — not "later,"
+not "after a deprecation window."
+
+See [`docs/skills/cleanup-redundancy.md`](docs/skills/cleanup-redundancy.md)
+for the full rule. Mandatory checklist before opening a PR:
+
+- [ ] `find . -type d -empty -not -path './.git/*'` returns nothing
+- [ ] No commented-out code blocks introduced
+- [ ] No dead parameters, kwargs, or struct fields nothing reads
+- [ ] No duplicate canonical sources (always one source → renderers)
+- [ ] All `import` statements in changed modules are used
+- [ ] README diagrams, AGENTS.md sections, `.doctyze.yaml` examples
+      reflect the post-change layout
+- [ ] `grep -r '<deleted-symbol-name>' .` returns zero hits
+
+The cleanup-redundancy skill is propagated into every Doctyze-scaffolded
+repo (modern + legacy templates) so the rule applies everywhere downstream
+too.
+
 ## Repo layout
 
 ```
