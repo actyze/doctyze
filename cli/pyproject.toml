@@ -65,4 +65,6 @@ target-version = ["py311"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --cov=doctyze --cov-report=term-missing"
+addopts = "-ra"
+# Run with `pytest --cov=doctyze --cov-report=term-missing` for coverage
+# (requires pytest-cov in the dev extras).
