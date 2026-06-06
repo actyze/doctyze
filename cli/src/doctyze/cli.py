@@ -202,30 +202,56 @@ def render(
     )
 
     if check:
-        # Render in-memory and compare against on-disk content.
-        drift: list[Path] = []
-        for name in selected:
-            try:
-                renderer = renderers.get(name)
-            except KeyError as exc:
-                console.print(f"  [yellow]skip[/yellow] {name}: {exc}")
-                continue
-            for target_path in renderer.render(repo, dry_run=True):
-                # Build the expected content by re-running the renderer
-                # against a temp shadow path is overkill; for v0.0.2 we
-                # rely on the simpler signal: if the target file doesn't
-                # exist, that's drift.
-                if not target_path.exists():
-                    drift.append(target_path)
-        if drift:
+        # Render to a sibling shadow tree, then byte-compare against the
+        # current on-disk content. This catches both missing files AND
+        # stale content — the difference matters when a canonical source
+        # was edited but the vendor file wasn't re-rendered.
+        import shutil
+        import tempfile
+
+        drift_missing: list[Path] = []
+        drift_stale: list[Path] = []
+
+        with tempfile.TemporaryDirectory() as shadow_root_str:
+            shadow_root = Path(shadow_root_str) / "shadow"
+            # Copy canonical sources to the shadow so renderers have what
+            # they need to produce expected output.
+            for sub in ("docs", ".doctyze.yaml"):
+                src = repo / sub
+                if src.is_dir():
+                    shutil.copytree(src, shadow_root / sub)
+                elif src.is_file():
+                    (shadow_root).mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(src, shadow_root / sub)
+
+            for name in selected:
+                try:
+                    renderer = renderers.get(name)
+                except KeyError as exc:
+                    console.print(f"  [yellow]skip[/yellow] {name}: {exc}")
+                    continue
+                # Render into the shadow tree.
+                expected_paths = renderer.render(shadow_root, dry_run=False)
+                for expected in expected_paths:
+                    rel = expected.relative_to(shadow_root)
+                    on_disk = repo / rel
+                    if not on_disk.exists():
+                        drift_missing.append(rel)
+                    elif on_disk.read_text() != expected.read_text():
+                        drift_stale.append(rel)
+
+        total = len(drift_missing) + len(drift_stale)
+        if total:
             console.print(
-                f"[red]✗[/red] {len(drift)} vendor file(s) missing or stale. "
+                f"[red]✗[/red] {total} vendor file(s) out of sync with canonical sources. "
                 "Run [bold]doctyze render[/bold] to fix."
             )
-            for d in drift[:10]:
-                console.print(f"  [red]missing[/red] {d.relative_to(repo)}")
+            for d in drift_missing[:10]:
+                console.print(f"  [red]missing[/red] {d}")
+            for d in drift_stale[:10]:
+                console.print(f"  [red]stale  [/red] {d}")
             sys.exit(1)
-        console.print("[green]✓[/green] all vendor files in sync")
+        console.print("[green]✓[/green] all vendor files in sync with canonical sources")
         return
 
     total = _render_targets(repo, selected, dry_run=dry_run)
