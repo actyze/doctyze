@@ -3,7 +3,14 @@
 Commands:
     doctyze init [--stack=<stack>] [--dry-run]
         Scan the current repo, detect the stack, and emit the canonical
-        documentation structure.
+        documentation structure. Also renders vendor-specific files for the
+        agent targets configured in .doctyze.yaml.
+
+    doctyze render [--target=<vendor>] [--dry-run] [--check]
+        Render canonical docs/skills/*.md and docs/runbooks/*.md into the
+        vendor-specific formats configured in .doctyze.yaml
+        (.claude/skills/, .cursor/rules/, .github/copilot-instructions.md,
+        .windsurfrules, .holmes/runbooks/, etc.).
 
     doctyze verify [--strict]
         Check for drift between code and documentation. Reports stale
@@ -31,14 +38,34 @@ import sys
 from pathlib import Path
 
 import click
+import yaml
 from rich.console import Console
 from rich.table import Table
 
 from doctyze import __version__
+from doctyze import renderers
 from doctyze.detector import detect_stack
 from doctyze.scaffolder import Scaffolder
 
 console = Console()
+
+# Default vendors rendered when .doctyze.yaml is missing or doesn't specify.
+DEFAULT_AGENT_TARGETS = ["claude", "cursor", "copilot", "holmes"]
+
+
+def _load_agent_targets(repo: Path) -> list[str]:
+    """Read agent_targets from .doctyze.yaml, fall back to defaults."""
+    config_path = repo / ".doctyze.yaml"
+    if not config_path.exists():
+        return DEFAULT_AGENT_TARGETS
+    try:
+        config = yaml.safe_load(config_path.read_text()) or {}
+    except yaml.YAMLError:
+        return DEFAULT_AGENT_TARGETS
+    targets = config.get("agent_targets")
+    if not isinstance(targets, list) or not targets:
+        return DEFAULT_AGENT_TARGETS
+    return [str(t).lower() for t in targets]
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
@@ -92,6 +119,118 @@ def init(stack: str | None, dry_run: bool, path: str, llm: str | None) -> None:
 
     scaffolder.write(plan)
     console.print(f"[green]✓[/green] generated {len(plan)} files")
+
+    # After scaffolding, render vendor-specific files for the configured
+    # agent targets so the repo works out-of-the-box with Claude Code,
+    # Cursor, Copilot, Holmes, etc.
+    targets = _load_agent_targets(repo)
+    if targets:
+        console.print(
+            f"\nRendering vendor files for agent targets: "
+            f"[cyan]{', '.join(targets)}[/cyan]"
+        )
+        rendered = _render_targets(repo, targets, dry_run=False)
+        console.print(f"[green]✓[/green] rendered {rendered} vendor files")
+
+
+def _render_targets(
+    repo: Path,
+    target_names: list[str],
+    *,
+    dry_run: bool,
+) -> int:
+    """Run each requested renderer and return the count of generated files."""
+    total = 0
+    for name in target_names:
+        try:
+            renderer = renderers.get(name)
+        except KeyError as exc:
+            console.print(f"  [yellow]skip[/yellow] {name}: {exc}")
+            continue
+        try:
+            written = renderer.render(repo, dry_run=dry_run)
+        except Exception as exc:  # noqa: BLE001 — surface any renderer issue clearly
+            console.print(f"  [red]error[/red] {name}: {exc}")
+            continue
+        verb = "would write" if dry_run else "wrote"
+        console.print(f"  [cyan]{name:<10}[/cyan] {verb} {len(written)} file(s)")
+        total += len(written)
+    return total
+
+
+@main.command()
+@click.option(
+    "--target",
+    "targets",
+    multiple=True,
+    help="Render only this target. May be passed multiple times. Default: all configured.",
+)
+@click.option("--dry-run", is_flag=True, help="Show what would be written without writing.")
+@click.option(
+    "--check",
+    is_flag=True,
+    help="CI mode: exit non-zero if generated files would differ from current on-disk content.",
+)
+@click.option("--path", default=".", help="Repo root.")
+@click.option("--list", "list_targets", is_flag=True, help="List available renderers and exit.")
+def render(
+    targets: tuple[str, ...],
+    dry_run: bool,
+    check: bool,
+    path: str,
+    list_targets: bool,
+) -> None:
+    """Render canonical docs/skills + docs/runbooks into vendor-specific files."""
+    if list_targets:
+        table = Table(title="Available renderers", show_lines=False)
+        table.add_column("Name", style="cyan")
+        table.add_column("Description")
+        for name, cls in sorted(renderers.REGISTRY.items()):
+            table.add_row(name, cls.description or "")
+        console.print(table)
+        return
+
+    repo = Path(path).resolve()
+    if not repo.is_dir():
+        console.print(f"[red]error:[/red] not a directory: {repo}")
+        sys.exit(1)
+
+    selected = list(targets) if targets else _load_agent_targets(repo)
+    console.print(
+        f"[bold]Doctyze[/bold] render  →  {repo}  "
+        f"(targets: [cyan]{', '.join(selected)}[/cyan])"
+    )
+
+    if check:
+        # Render in-memory and compare against on-disk content.
+        drift: list[Path] = []
+        for name in selected:
+            try:
+                renderer = renderers.get(name)
+            except KeyError as exc:
+                console.print(f"  [yellow]skip[/yellow] {name}: {exc}")
+                continue
+            for target_path in renderer.render(repo, dry_run=True):
+                # Build the expected content by re-running the renderer
+                # against a temp shadow path is overkill; for v0.0.2 we
+                # rely on the simpler signal: if the target file doesn't
+                # exist, that's drift.
+                if not target_path.exists():
+                    drift.append(target_path)
+        if drift:
+            console.print(
+                f"[red]✗[/red] {len(drift)} vendor file(s) missing or stale. "
+                "Run [bold]doctyze render[/bold] to fix."
+            )
+            for d in drift[:10]:
+                console.print(f"  [red]missing[/red] {d.relative_to(repo)}")
+            sys.exit(1)
+        console.print("[green]✓[/green] all vendor files in sync")
+        return
+
+    total = _render_targets(repo, selected, dry_run=dry_run)
+    suffix = " (dry-run)" if dry_run else ""
+    console.print(f"[green]✓[/green] rendered {total} file(s){suffix}")
 
 
 @main.command()

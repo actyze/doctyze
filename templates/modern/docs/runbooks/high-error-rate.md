@@ -1,6 +1,17 @@
+---
+runbook_id: high-error-rate
+alert_names:
+  - "{{SERVICE_NAME}}HighErrorRate"
+severity: high
+service: "{{SERVICE_NAME}}"
+confidence: inferred
+---
+
 # Runbook — High error rate
 
 > Confidence: 🟡 INFERRED. Doctyze drafted this seed; verify and refine.
+> This file is canonical. Holmes YAML at `.holmes/runbooks/high-error-rate.yaml`
+> is generated from it via `doctyze render`.
 
 ## Symptom
 

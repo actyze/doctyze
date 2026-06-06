@@ -1,6 +1,6 @@
 [project]
 name = "actyze-doctyze"
-version = "0.0.1"
+version = "0.0.2"
 description = "Open-source documentation scaffolder for any codebase — modern or legacy."
 readme = "../README.md"
 license = { text = "Apache-2.0" }

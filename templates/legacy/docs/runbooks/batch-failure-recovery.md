@@ -1,7 +1,19 @@
+---
+runbook_id: batch-failure-recovery
+alert_names:
+  - "{{SERVICE_NAME}}BatchJobFailed"
+  - "{{SERVICE_NAME}}BatchSLABreach"
+severity: high
+service: "{{SERVICE_NAME}}"
+confidence: inferred
+---
+
 # Runbook — Batch failure recovery
 
 > Confidence: 🟡 INFERRED. Doctyze drafted this from typical legacy batch
 > patterns; verify against this specific system.
+> This file is canonical. Holmes YAML at `.holmes/runbooks/batch-failure-recovery.yaml`
+> is generated from it via `doctyze render`.
 
 ## Symptom
 

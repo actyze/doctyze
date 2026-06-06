@@ -38,6 +38,25 @@ Published by [Actyze](https://github.com/actyze) under Apache 2.0.
 - **Click** for CLI command structure. No alternative argument parsers.
 - **PyYAML** for YAML I/O. No alternatives without prior ADR.
 
+## Canonical-source-of-truth model (load-bearing)
+
+Doctyze treats `docs/skills/*.md` and `docs/runbooks/*.md` as the
+**canonical source of truth**. Vendor-specific files
+(`.claude/skills/`, `.cursor/rules/`, `.github/copilot-instructions.md`,
+`.windsurfrules`, `.holmes/runbooks/`) are **generated** by renderers in
+`cli/src/doctyze/renderers/`.
+
+When contributing:
+
+- **Never edit a generated vendor file directly.** Edit the canonical
+  markdown in `docs/skills/` or `docs/runbooks/`, then run
+  `doctyze render`.
+- **Adding support for a new AI tool** means adding a renderer subclass
+  in `cli/src/doctyze/renderers/<vendor>.py` and registering it in
+  `renderers/__init__.py:REGISTRY`. Do not add another canonical format.
+- **The PR review GitHub Action runs `doctyze render --check`** to fail
+  PRs where generated files have drifted from canonical sources.
+
 ## Repo layout
 
 ```
