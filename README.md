@@ -243,28 +243,53 @@ The `AGENTS.md` file at the repo root is itself canonical — it's the AAIF
 universal standard that every AI tool (Codex CLI, Claude Code, Cursor,
 Copilot, Cline, Windsurf, Aider) already reads. No render step needed.
 
+## How Doctyze fits with the rest of your toolchain
+
+Doctyze does **not** compete with PR review agents (CodeRabbit, Greptile,
+Qodo, Bito, Copilot Code Review, internal copilots) or coding assistants
+(Claude Code, Cursor, Copilot, Windsurf, Cline). It runs **alongside**
+them, filling a gap none of them treat as a first-class concern: keeping
+the documentation in sync with the code.
+
+| Concern | Doctyze | Your PR review agent (CodeRabbit / Greptile / Qodo / …) | Your coding assistant (Claude Code / Cursor / …) |
+|---|:---:|:---:|:---:|
+| Code correctness, security, style | ❌ | ✅ | (proposes code) |
+| Documentation drift (ADRs, runbooks, specs, OpenAPI) | ✅ | ❌ | ❌ |
+| Pattern conformance against `docs/skills/` | ✅ | ❌ (no skills concept) | reads skills if rendered |
+| Test presence | ⚠️ presence only | ✅ | (proposes tests) |
+| ADR archaeology + intent preservation | ✅ | ❌ | reads if available |
+| Codebase context for the AI | ✅ (via canonical layer) | varies | varies |
+
+The Doc Guard plugs into whichever PR review agent you already use. They
+post different comments, cover different ground, never conflict.
+
 ## The three pillars
 
 | Pillar | What it does | When it runs |
 |---|---|---|
 | **Scaffolder** | Scans repo, detects stack, emits canonical structure with confidence markers | Once per repo (`doctyze init`); on demand |
-| **Renderer** | Compiles canonical `docs/skills/` and `docs/runbooks/` into the vendor formats configured in `.doctyze.yaml` | Automatically at the end of `doctyze init`; on every commit (GitHub Action); manually via `doctyze render` |
-| **PR Review Agent** | On each PR, determines whether docs need updating; comments inline; can block merge | Continuously (GitHub Action / GitLab CI / Bitbucket) |
+| **Renderer** | Compiles canonical `docs/skills/` and `docs/runbooks/` into the vendor formats configured in `.doctyze.yaml` | Automatically at the end of `doctyze init`; on every push (GitHub Action); manually via `doctyze render` |
+| **Doc Guard** | On each PR, checks whether docs were updated for the code change. Posts inline suggestions; can block merge. **Runs alongside whatever PR review agent you already use.** | Continuously (GitHub Action / GitLab CI / Bitbucket) |
 
-## PR review — what gets blocked
+## Doc Guard — what gets blocked
 
-Default-strict rules (configurable via `.doctyze.yaml`):
+Default rules (configurable in `.doctyze.yaml`):
 
 | Trigger | Action |
 |---|---|
-| Public API changed without `docs/api/openapi.yaml` update | **Block** + suggest diff |
+| Public API changed without `docs/api/openapi.yaml` update | **Block** + suggest the OpenAPI diff |
+| New external dependency added without an accompanying ADR | **Block** + propose ADR stub |
 | New `try/except` or error class without runbook entry | **Block** + suggest runbook stub |
-| New external dependency added without ADR | **Block** + propose ADR stub |
+| Existing accepted ADR contradicted without a superseding ADR | **Block** + identify the contradicted ADR |
 | ADR file deleted | **Block** unconditionally (ADRs are append-only) |
 | Pure refactor (whitespace, rename, no behavior change) | **Pass silently** |
 
 Enforcement levels: `warn-only` / `block-required` / `block-all`. Each
 repo picks one in `.doctyze.yaml`.
+
+See [`doc-guard-action/README.md`](doc-guard-action/README.md) for the
+full Action reference, including how to run it next to CodeRabbit /
+Greptile / Qodo / Copilot Code Review / your internal copilot.
 
 ## Project structure
 
@@ -289,7 +314,7 @@ doctyze/                               this repo
 │   ├── modern/                        ← Java/Python/Node/React/Go
 │   └── legacy/                        ← COBOL/ABAP/IBM i/VB6/.NET Fx/PB/Delphi
 │
-├── pr-review-action/                  ← the GitHub Action (composite, action.yml)
+├── doc-guard-action/                  ← the GitHub Action (composite, action.yml)
 │
 └── examples/                          ← end-to-end demo repos
     └── python-fastapi-orders/         ← the worked example

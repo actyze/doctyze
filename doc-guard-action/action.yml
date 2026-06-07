@@ -1,6 +1,6 @@
-name: "Doctyze PR Review"
+name: "Doctyze Doc Guard"
 author: "Actyze"
-description: "Enforces documentation-coupling on every PR. Suggests doc updates when code changes; can block merge."
+description: "Documentation-coupling guard for pull requests. Plugs into any existing PR review agent (CodeRabbit, Greptile, Qodo, Copilot Code Review, etc.). Ensures the canonical doc layer is updated whenever code changes."
 branding:
   icon: "book-open"
   color: "blue"
@@ -11,7 +11,7 @@ inputs:
     required: false
     default: "warn-only"
   llm:
-    description: "LLM provider: claude | openai | gemini | bedrock | azure | ollama"
+    description: "LLM provider: claude | openai | ollama"
     required: false
     default: "claude"
   anthropic-api-key:
@@ -19,9 +19,6 @@ inputs:
     required: false
   openai-api-key:
     description: "OpenAI API key (when llm=openai)."
-    required: false
-  google-api-key:
-    description: "Google API key (when llm=gemini)."
     required: false
   config:
     description: "Path to .doctyze.yaml (default: .doctyze.yaml at repo root)."
@@ -35,10 +32,10 @@ inputs:
     required: false
 
 outputs:
-  suggestions-count:
-    description: "Number of review suggestions posted on the PR."
-  required-changes:
-    description: "Number of changes that block merge (only > 0 when mode != warn-only)."
+  doc-warnings-count:
+    description: "Number of documentation-drift warnings posted on the PR."
+  required-doc-updates:
+    description: "Number of required doc updates that block merge (only > 0 when mode != warn-only)."
 
 runs:
   using: "composite"
@@ -54,16 +51,15 @@ runs:
       with:
         python-version: "3.11"
 
-    - name: Install Doctyze (latest)
+    - name: Install Doctyze
       shell: bash
       run: pip install actyze-doctyze[llm]
 
-    - name: Run Doctyze PR analysis
+    - name: Run Doctyze doc-coupling analysis
       shell: bash
       env:
         ANTHROPIC_API_KEY: ${{ inputs.anthropic-api-key }}
         OPENAI_API_KEY: ${{ inputs.openai-api-key }}
-        GOOGLE_API_KEY: ${{ inputs.google-api-key }}
         DOCTYZE_MODE: ${{ inputs.mode }}
         DOCTYZE_LLM: ${{ inputs.llm }}
         DOCTYZE_CONFIG: ${{ inputs.config }}
@@ -71,7 +67,7 @@ runs:
         DOCTYZE_EXCLUDE_PATHS: ${{ inputs.exclude-paths }}
         GITHUB_TOKEN: ${{ github.token }}
       run: |
-        doctyze pr-review run \
+        doctyze doc-guard run \
           --pr-number "${{ github.event.pull_request.number }}" \
           --base-sha "${{ github.event.pull_request.base.sha }}" \
           --head-sha "${{ github.event.pull_request.head.sha }}"
