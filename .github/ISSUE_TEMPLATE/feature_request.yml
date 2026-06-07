@@ -1,0 +1,58 @@
+name: ✨ Feature request
+description: Propose a new feature or enhancement.
+title: "feat: <short description>"
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before proposing a feature: please skim the
+        [open Discussions](https://github.com/actyze/doctyze/discussions)
+        and existing issues to see if it's been raised.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do that's hard / impossible today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Concrete description of the feature. Code/config examples welcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workarounds have you tried? Why are they insufficient?
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Which area would this touch?
+      multiple: true
+      options:
+        - CLI (`doctyze init`, `render`, `verify`, …)
+        - Scaffolder (templates)
+        - Renderer (Claude / Cursor / Copilot / Windsurf / Holmes)
+        - Doc Guard GitHub Action
+        - LLM extraction
+        - Detector (stack auto-detection)
+        - Examples
+        - Documentation
+        - Other
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Would you be willing to help implement this?
+      options:
+        - label: "Yes, I'd be happy to send a PR"
+        - label: "Yes, but I'd need guidance"
+        - label: "No, just reporting the need"

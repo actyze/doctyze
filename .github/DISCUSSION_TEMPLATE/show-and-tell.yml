@@ -1,0 +1,49 @@
+title: "[Show & Tell] <Your project / use case>"
+labels: ["show-and-tell"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tell us how you're using Doctyze! Repos, screenshots, ADR examples,
+        runbook patterns you've found useful — anything goes. This is the
+        channel where contributors discover what's working.
+
+  - type: input
+    id: repo
+    attributes:
+      label: Repo or project (optional)
+      placeholder: "https://github.com/your-org/your-service"
+
+  - type: dropdown
+    id: stack
+    attributes:
+      label: Stack
+      options:
+        - python
+        - java-spring
+        - node-react
+        - go
+        - cobol
+        - abap
+        - ibm-i-rpg
+        - vb6
+        - dotnet-framework
+        - powerbuilder
+        - delphi
+        - mixed / other
+
+  - type: textarea
+    id: story
+    attributes:
+      label: What you did
+      placeholder: |
+        We ran `doctyze init` on …, wrote N ADRs covering …,
+        and the Doc Guard caught … on PR #….
+    validations:
+      required: true
+
+  - type: textarea
+    id: takeaway
+    attributes:
+      label: What surprised you / what you wish was easier
+      description: Optional but very useful for the roadmap.

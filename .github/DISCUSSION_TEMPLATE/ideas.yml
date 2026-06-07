@@ -1,0 +1,29 @@
+title: "[Idea] <Short title>"
+labels: ["idea"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Early-stage ideas, before they're concrete enough for a feature
+        request. Half-baked is fine — this is where shapes get refined
+        before becoming issues.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea
+      placeholder: "What if Doctyze did …"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Why it would help
+      placeholder: "Today we have to … and this would change that to …"
+
+  - type: textarea
+    id: rough-shape
+    attributes:
+      label: Rough shape (optional)
+      description: CLI command name, config block, what files it would write, etc.

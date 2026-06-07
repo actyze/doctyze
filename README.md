@@ -3,9 +3,13 @@
 **Open-source documentation scaffolder for any codebase — modern or legacy.**
 Turn any repository into living documentation for humans and AI agents.
 
+[![CI](https://github.com/actyze/doctyze/actions/workflows/ci.yml/badge.svg)](https://github.com/actyze/doctyze/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![AGENTS.md](https://img.shields.io/badge/AGENTS.md-supported-green)](https://agents.md)
 [![Status](https://img.shields.io/badge/status-pre--alpha-orange)]()
+[![GitHub Stars](https://img.shields.io/github/stars/actyze/doctyze?style=social)](https://github.com/actyze/doctyze/stargazers)
+[![GitHub Discussions](https://img.shields.io/github/discussions/actyze/doctyze)](https://github.com/actyze/doctyze/discussions)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 > By [Actyze](https://github.com/actyze). Doctyze closes the OSS gap for
 > comprehensive code-context generation — see

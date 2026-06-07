@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & general discussion
+    url: https://github.com/actyze/doctyze/discussions
+    about: For "how do I…" questions, design discussions, or sharing how you're using Doctyze.
+  - name: 🛡️ Security vulnerability
+    url: https://github.com/actyze/doctyze/security/advisories/new
+    about: Report a security issue privately. Please do NOT open a public issue.

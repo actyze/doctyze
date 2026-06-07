@@ -1,0 +1,32 @@
+name: 📚 Documentation issue
+description: Something in the docs is wrong, missing, or confusing.
+title: "docs: <short description>"
+labels: ["documentation", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Doc fixes are often great first contributions! If you spot the
+        problem and know the fix, feel free to open a PR directly and
+        link this issue.
+
+  - type: input
+    id: location
+    attributes:
+      label: Where in the docs?
+      placeholder: "README.md → 'Quick start' section, OR examples/python-fastapi-orders/docs/skills/write-adr.md"
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong / missing / confusing?
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested
+    attributes:
+      label: Suggested fix or improvement
+      description: Optional. Even rough wording is helpful.
