@@ -1,4 +1,4 @@
-# Doctyze
+  # Doctyze
 
 **Open-source documentation scaffolder for any codebase — modern or legacy.**
 Turn any repository into living documentation for humans and AI agents.
@@ -50,6 +50,10 @@ Every artifact is stamped with a confidence marker:
 **🟢 CONFIRMED** (extracted from code) ·
 **🟡 INFERRED** (LLM-inferred, needs review) ·
 **🔴 GAP** (cannot be extracted; flagged for senior-engineer interview).
+
+## Demo
+
+![doctyze init demo](assets/doctyze-init-demo.gif)
 
 ## Why this exists
 
