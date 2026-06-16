@@ -1,0 +1,24 @@
+name: "Doctyze freshness check"
+description: "Flag documentation that is stale because its anchored code changed (warn-first)."
+branding:
+  icon: "book-open"
+  color: "blue"
+inputs:
+  path:
+    description: "Path to the repository to check"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - name: Install doctyze
+      shell: bash
+      run: pip install "${{ github.action_path }}"
+    - name: Check documentation freshness
+      shell: bash
+      # Tip: use actions/checkout with fetch-depth: 0 so git diff sees the base.
+      run: doctyze watch "${{ inputs.path }}"

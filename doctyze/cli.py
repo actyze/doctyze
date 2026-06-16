@@ -1,0 +1,144 @@
+"""Doctyze CLI — a thin presenter over the `api` service layer.
+
+The command bodies only parse args and format output; the actual work lives in
+`doctyze/api.py` (shared with the MCP server, so the two can't drift). None of
+these commands require an API key — generation is delegated to the agent.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+
+import click
+
+from . import __version__, api
+
+
+@click.group()
+@click.version_option(version=__version__, prog_name="doctyze")
+def main() -> None:
+    """Generate & maintain a documentation context layer for any repo.
+
+    Doctyze brings the playbook; your existing IDE/CI agent brings the LLM.
+    """
+
+
+@main.command()
+@click.argument("path", default=".")
+def init(path: str) -> None:
+    """Guided setup: scaffold structure, install the Doctyze skills, and print next steps.
+
+    Safe: it does NOT move your existing docs (run `consolidate` for that) and does
+    NOT generate prose (your agent does that). Teammates inherit the skills once
+    you commit them.
+    """
+    from .generate.scaffold import ensure_structure
+    from .generate.stack import detect_stack
+
+    root = Path(path).resolve()
+    ensure_structure(root)
+    written = api.distribute(root)
+    stack = detect_stack(root)
+
+    click.echo(f"Doctyze initialized in {root.name}/ (stack: {', '.join(stack.languages) or 'unknown'}).")
+    click.echo("  • canonical docs/ structure scaffolded")
+    click.echo(f"  • Doctyze skills installed to {len(written)} agent file(s) "
+               f"(.claude/skills, .cursor/rules, AGENTS.md)")
+    click.echo("\nNext:")
+    click.echo("  1. git add -A && commit  → teammates inherit Doctyze on clone")
+    click.echo("  2. doctyze consolidate    → fold scattered docs into docs/ (review, then --apply)")
+    click.echo("  3. in your IDE: run the `doctyze` skill → your agent generates the docs")
+    click.echo("  4. doctyze watch --install → keep docs fresh on every commit")
+
+
+@main.command()
+@click.option("--apply", is_flag=True, help="Apply the migration plan (default: propose only).")
+@click.argument("path", default=".")
+def consolidate(apply: bool, path: str) -> None:
+    """Audit scattered docs and consolidate into the canonical structure.
+
+    Without --apply, writes a reviewable plan and changes nothing. Moves preserve
+    git history; nothing is ever deleted.
+    """
+    root = Path(path).resolve()
+    result = api.consolidate_plan(root)
+
+    plan_path = root / ".doctyze" / "consolidation-plan.md"
+    plan_path.parent.mkdir(parents=True, exist_ok=True)
+    plan_path.write_text(result.rendered, encoding="utf-8")
+
+    click.echo(f"Scanned {len(result.docs)} docs; {len(result.plan.ops)} proposed change(s).")
+    click.echo(f"Plan written to {plan_path.relative_to(root)}")
+    if not result.plan.ops:
+        click.echo("Already canonical — nothing to do.")
+        return
+    if apply:
+        moved = api.consolidate_apply(root, result.plan)
+        click.echo(f"Applied {len(moved)} change(s), non-destructively.")
+    else:
+        click.echo("Proposed only. Review the plan, then re-run with --apply.")
+
+
+@main.command()
+@click.argument("path", default=".")
+def bootstrap(path: str) -> None:
+    """Scaffold the canonical docs/ structure and hand a generation manifest to your agent.
+
+    Deterministic only: structure + stack detection + optional CodeBoarding diagrams.
+    The prose generation is then done by your existing agent following the manifest.
+    """
+    root = Path(path).resolve()
+    r = api.bootstrap(root)
+
+    manifest_path = root / ".doctyze" / "bootstrap-manifest.md"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(r.manifest, encoding="utf-8")
+
+    click.echo(f"Scaffolded {len(r.created)} section index file(s); stack: "
+               f"{', '.join(r.stack.languages) or 'unknown'}.")
+    click.echo("Diagrams: " + ("generated via CodeBoarding." if r.diagrams_done
+                                else "CodeBoarding not found — your agent will draw them."))
+    click.echo(f"Next steps for your agent: {manifest_path.relative_to(root)}")
+
+
+@main.command()
+@click.argument("path", default=".")
+def distribute(path: str) -> None:
+    """Fan the Doctyze skills out to agent files (.claude/skills, .cursor/rules, AGENTS.md)."""
+    root = Path(path).resolve()
+    written = api.distribute(root)
+    click.echo(f"Distributed skills to {len(written)} agent file(s) under {root.name}/.")
+
+
+@main.command()
+@click.option("--install", is_flag=True, help="Install the warn-first pre-commit freshness hook.")
+@click.option("--staged", is_flag=True, help="Check staged changes (used by the hook).")
+@click.argument("path", default=".")
+def watch(install: bool, staged: bool, path: str) -> None:
+    """Keep docs fresh: flag docs whose anchored code changed; delegate refresh to your agent.
+
+    Warn-first — never blocks. Run --install to add the pre-commit hook.
+    """
+    from .freshness.hook import install_hook
+    from .freshness.regenerate import write_refresh_manifest
+
+    root = Path(path).resolve()
+    if install:
+        hook = install_hook(root)
+        if hook is None:
+            click.echo("Not a git repo — no .git/hooks to install into.")
+        else:
+            click.echo(f"Installed warn-first freshness hook: {hook.relative_to(root)}")
+        return
+
+    stale = api.check_freshness(root, staged=staged)
+    if not stale:
+        click.echo("Docs are fresh.")
+        return
+    out = write_refresh_manifest(root, stale)
+    click.echo(f"{len(stale)} doc(s) may be stale (see {out.relative_to(root)}):")
+    for f, anchor, _ in stale:
+        click.echo(f"  - {f.relative_to(root)}  (regenerate: {anchor.generated_by})")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

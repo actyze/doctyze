@@ -53,9 +53,9 @@ anonymous.
 
 In scope:
 
-- The `actyze-doctyze` Python package on PyPI
+- The `doctyze` Python package on PyPI
 - The published Doctyze GitHub Actions
-  (`actyze/doctyze-doc-guard-action`, future Action packages)
+  (`action.yml`, the reusable freshness Action)
 - Code in this repository
 - The Doctyze MCP server (when published)
 
@@ -72,12 +72,12 @@ Examples of issues we want to know about:
 
 - A way for a malicious canonical source (e.g., a crafted
   `docs/skills/*.md`) to make Doctyze write files outside the intended
-  vendor target directories
+  agent target directories (.claude/skills, .cursor/rules, AGENTS.md)
 - A path traversal that lets a malicious template escape the repo root
 - Any code execution path triggered by reading user-supplied content
-- LLM prompt injection that causes the extractor or doc-guard to leak
+- LLM prompt injection that causes Doctyze to leak
   secrets, write files, or run arbitrary commands
-- A way for a malicious PR to manipulate the doc-guard Action into
+- A way for a malicious PR to manipulate the freshness Action into
   granting privileges it shouldn't have
 - Credential leakage (API keys appearing in logs, in generated files,
   or in the audit trail)
@@ -87,8 +87,8 @@ Examples of things that are not security issues but still worth a
 regular GitHub issue:
 
 - A documentation typo
-- A renderer producing the wrong content for a non-malicious input
-- An LLM backend giving a low-quality answer
+- Doctyze producing the wrong content for a non-malicious input
+- Your IDE/CI agent giving a low-quality answer
 
 If you're not sure whether something qualifies, err on the side of
 reporting privately.

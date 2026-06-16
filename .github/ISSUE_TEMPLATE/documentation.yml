@@ -14,7 +14,7 @@ body:
     id: location
     attributes:
       label: Where in the docs?
-      placeholder: "README.md → 'Quick start' section, OR examples/python-fastapi-orders/docs/skills/write-adr.md"
+      placeholder: "README.md → 'Quick start' section, OR docs/specs/consolidate.md"
     validations:
       required: true
 

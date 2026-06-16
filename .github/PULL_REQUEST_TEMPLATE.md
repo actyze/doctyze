@@ -8,27 +8,26 @@
 
 - [ ] Bug fix
 - [ ] New feature
+- [ ] New / updated skill
 - [ ] Documentation
-- [ ] New renderer (for an AI tool)
 - [ ] Refactor / cleanup
 - [ ] Test / CI
 - [ ] Other:
 
 ## Doctyze contributor checklist
 
-The cleanup rule applies (see [`docs/skills/cleanup-redundancy.md`](../docs/skills/cleanup-redundancy.md)).
-Before requesting review:
+The cleanup rule applies (see `CONTRIBUTING.md`). Before requesting review:
 
 - [ ] `find . -type d -empty -not -path './.git/*'` returns nothing
 - [ ] No commented-out code introduced
 - [ ] No dead parameters / unused imports
-- [ ] No duplicate canonical sources (canonical lives once → renderers emit vendor variants)
-- [ ] If I added/changed behavior the docs describe, I updated the docs in the same PR
-- [ ] If I made an architectural choice, I wrote an ADR (see [`docs/skills/check-and-update-adrs.md`](../docs/skills/check-and-update-adrs.md))
+- [ ] No duplicated content (a fact/taxonomy lives in one place; derive the rest)
+- [ ] If I changed a skill, I ran `scripts/sync-plugin-skills.sh`
+- [ ] If I changed behavior the docs describe, I updated the docs in the same PR
+- [ ] If I made an architectural choice, I added an ADR under `docs/architecture/decisions/`
 - [ ] `pytest` passes locally
-- [ ] `doctyze render --check` passes on the worked example
-- [ ] The CI badge will be green when this merges
+- [ ] **No LLM SDK dependency added** (Doctyze is BYO-agent)
 
 ## Anything else?
 
-<!-- Screenshots, related discussion links, reviewer hints, follow-up issues you'd open after this merges. -->
+<!-- Screenshots, related discussion links, reviewer hints, follow-up issues. -->

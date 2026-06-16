@@ -38,13 +38,13 @@ body:
       label: Which area would this touch?
       multiple: true
       options:
-        - CLI (`doctyze init`, `render`, `verify`, …)
-        - Scaffolder (templates)
-        - Renderer (Claude / Cursor / Copilot / Windsurf / Holmes)
-        - Doc Guard GitHub Action
-        - LLM extraction
-        - Detector (stack auto-detection)
-        - Examples
+        - CLI (`init`, `consolidate`, `bootstrap`, `distribute`, `watch`)
+        - Consolidation (scattered docs → canonical structure)
+        - Generation skills (specs / architecture / runbooks / …)
+        - Distribute (agent files: .claude/skills, .cursor/rules, AGENTS.md)
+        - Freshness (anchors, drift detection, hook)
+        - MCP server
+        - Stack detection
         - Documentation
         - Other
 

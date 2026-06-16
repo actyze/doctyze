@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doctyze"
+version = "0.3.0.dev0"
+description = "Generate and maintain a complete documentation context layer for any repo — using the LLM already in your IDE."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = [
+  "click>=8.1",
+  "pyyaml>=6.0",
+]
+
+# Doctyze NEVER calls an LLM itself — generation is delegated to the developer's
+# existing IDE/CI agent (BYO-agent). So there is intentionally NO anthropic/openai
+# dependency here. Optional extras below are deterministic helpers only.
+[project.optional-dependencies]
+mcp = ["mcp>=1.0"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+doctyze = "doctyze.cli:main"
+doctyze-mcp = "doctyze.mcp_server:main"
+
+[tool.setuptools.packages.find]
+include = ["doctyze*"]
+
+[tool.setuptools.package-data]
+# Ship the canonical agent skills inside the wheel so `doctyze distribute` works
+# from a pip install (not just from source).
+doctyze = ["skills/**/*.md", "skills/**/*.mdc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,10 @@
+{
+  "name": "doctyze",
+  "displayName": "Doctyze",
+  "description": "Generate and maintain a documentation context layer for any repo (BYO-agent, no API key).",
+  "version": "0.3.0",
+  "author": { "name": "Actyze" },
+  "homepage": "https://github.com/actyze/doctyze",
+  "repository": "https://github.com/actyze/doctyze",
+  "license": "Apache-2.0"
+}

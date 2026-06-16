@@ -24,7 +24,7 @@ body:
       label: Steps to reproduce
       placeholder: |
         1. `git clone …`
-        2. `pip install actyze-doctyze`
+        2. `pip install -e .`  (not yet on PyPI)
         3. `doctyze init`
         4. Observe …
     validations:
@@ -66,14 +66,15 @@ body:
         - other / not detected
 
   - type: dropdown
-    id: llm
+    id: agent
     attributes:
-      label: LLM backend
+      label: AI agent / IDE you used
+      description: Doctyze is BYO-agent — it uses the LLM already in your IDE/CI, no key of its own.
       options:
-        - none (noop)
-        - claude
-        - openai
-        - ollama
+        - Claude Code
+        - Cursor
+        - GitHub Copilot
+        - CLI only (no agent)
         - other
 
   - type: textarea

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "doctyze": {
+      "command": "uvx",
+      "args": ["doctyze-mcp"]
+    }
+  }
+}

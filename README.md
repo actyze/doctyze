@@ -1,367 +1,60 @@
 # Doctyze
 
-**Open-source documentation scaffolder for any codebase — modern or legacy.**
-Turn any repository into living documentation for humans and AI agents.
+**Generate and maintain a complete documentation context layer for any repo — using the LLM already in your IDE.**
 
-[![CI](https://github.com/actyze/doctyze/actions/workflows/ci.yml/badge.svg)](https://github.com/actyze/doctyze/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![AGENTS.md](https://img.shields.io/badge/AGENTS.md-supported-green)](https://agents.md)
-[![Status](https://img.shields.io/badge/status-pre--alpha-orange)]()
-[![GitHub Stars](https://img.shields.io/github/stars/actyze/doctyze?style=social)](https://github.com/actyze/doctyze/stargazers)
-[![GitHub Discussions](https://img.shields.io/github/discussions/actyze/doctyze)](https://github.com/actyze/doctyze/discussions)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](CODE_OF_CONDUCT.md)
+[![Status](https://img.shields.io/badge/status-v3%20in%20development-yellow)]()
 
-> By [Actyze](https://github.com/actyze). Doctyze closes the OSS gap for
-> comprehensive code-context generation — see
-> [`docs/LANDSCAPE.md`](docs/LANDSCAPE.md) for the market argument.
+---
 
-## What Doctyze does
+## What it does
 
-One command scans your repository, detects the stack, and produces a single
-**canonical source of truth** for documentation — vendor-neutral markdown.
-Vendor-specific files for whichever AI tools you use (Claude Code, Cursor,
-Copilot, Windsurf, HolmesGPT) are then **generated** from the canonical
-source. Edit once, render everywhere.
+Point Doctyze at any existing repository, any tech stack. It:
 
-**Canonical (source of truth — you edit these):**
+1. **Consolidates** scattered docs (loose READMEs, wiki notes, stray design files) into one canonical `docs/` structure — non-destructively.
+2. **Bootstraps** the full SDLC context layer from the code: specs, architecture docs + Mermaid diagrams, dev/testing skills, runbooks, deployment & observability docs.
+3. **Maintains** it — when code changes, it flags the docs that are now stale and your agent refreshes them.
 
-- **`AGENTS.md`** — universal context for AI coding agents (AAIF standard)
-- **`docs/architecture/`** — ADRs (MADR), Mermaid diagrams, Structurizr C4
-- **`docs/specs/`** — feature specifications (Spec Kit format)
-- **`docs/skills/*.md`** — canonical agent skills (markdown + YAML frontmatter)
-- **`docs/runbooks/*.md`** — canonical runbooks (markdown + frontmatter)
-- **`docs/investigations/`** — postmortems
-- **`docs/api/openapi.yaml`** — API contract
+The result serves both humans and AI coding agents (`AGENTS.md`, `.cursor/rules`, Claude Code skills, MCP).
 
-**Generated (vendor-specific outputs from `doctyze render`):**
+## Bring your own agent (no API key)
 
-- **`.claude/skills/<name>/SKILL.md`** — Claude Code skills
-- **`.cursor/rules/<name>.md`** — Cursor rules
-- **`.github/copilot-instructions.md`** — GitHub Copilot (concatenated)
-- **`.windsurfrules`** — Windsurf rules (concatenated)
-- **`.holmes/runbooks/<id>.yaml`** — HolmesGPT machine-executable runbooks
-- **`.github/workflows/doctyze-review.yml`** — PR-doc-coupling enforcement
+Doctyze does **not** call an LLM or need an API key. It brings the playbook (skills) and the deterministic mechanics (consolidation, drift detection, fan-out); the **LLM is the one already in your IDE** (Cursor / Claude Code / Copilot) or your CI agent. In your editor you just run the Doctyze skill and your existing agent does the generation.
 
-Which vendors are rendered is controlled by `agent_targets:` in
-[`.doctyze.yaml`](#configuration) — see `doctyze render --list` for the
-full set.
-
-Every artifact is stamped with a confidence marker:
-**🟢 CONFIRMED** (extracted from code) ·
-**🟡 INFERRED** (LLM-inferred, needs review) ·
-**🔴 GAP** (cannot be extracted; flagged for senior-engineer interview).
-
-## Why this exists
-
-Proprietary tools (Mintlify, Kodesage, iBEAM IntDoc, Swimm) each cover ~30%
-of the surface area. The OSS pieces exist (Reversa, adr-tools, log4brains,
-Docusaurus, Claude Code skills, AGENTS.md, HolmesGPT) but no one has bundled
-them. The legacy modernization market is **$19.9B** and growing 14.9%
-annually — entirely served by proprietary consultancy platforms today.
-
-**Doctyze is the bundle.**
-
-## What gets generated — by stack
-
-### Modern stack (Java/Spring, Python, Node, React, Go)
-
-```
-modern-service/
-├── README.md
-├── AGENTS.md                          ← CANONICAL — universal agent context
-├── CODEOWNERS
-├── pyproject.toml | package.json | pom.xml | go.mod
-│
-├── docs/                              ← CANONICAL — source of truth (you edit these)
-│   ├── index.md
-│   ├── architecture/
-│   │   ├── overview.md
-│   │   ├── workspace.dsl              ← Structurizr C4
-│   │   ├── diagrams/*.mmd             ← Mermaid (renders inline on GitHub)
-│   │   └── decisions/                 ← ADRs (MADR)
-│   ├── specs/                         ← feature specs (Spec Kit format)
-│   ├── skills/*.md                    ← CANONICAL agent skills (md + YAML frontmatter)
-│   ├── runbooks/*.md                  ← CANONICAL runbooks (md + frontmatter)
-│   ├── investigations/                ← postmortems
-│   └── api/openapi.yaml
-│
-├── .claude/skills/<name>/SKILL.md     ← GENERATED by `doctyze render --target=claude`
-├── .cursor/rules/<name>.md            ← GENERATED by `doctyze render --target=cursor`
-├── .github/copilot-instructions.md    ← GENERATED by `doctyze render --target=copilot`
-├── .windsurfrules                     ← GENERATED by `doctyze render --target=windsurf`
-├── .holmes/runbooks/<id>.yaml         ← GENERATED by `doctyze render --target=holmes`
-├── .github/workflows/doctyze-review.yml
-│
-├── src/
-└── tests/
-```
-
-### Legacy stack (COBOL, SAP ABAP, IBM i RPG, VB6, .NET Framework, PowerBuilder, Delphi)
-
-Different reality: legacy SCM, library-and-object models, single mega-repo
-per application. Same canonical-source model — vendor files (Claude, Cursor,
-Holmes) are still generated from `docs/skills/*.md` and `docs/runbooks/*.md`.
-
-```
-legacy-app/
-├── README.md
-├── AGENTS.md                          ← CANONICAL
-├── CODEOWNERS
-├── DOCTYZE.yaml                       ← project metadata (stack, ingestion)
-│
-├── docs/                              ← CANONICAL — source of truth
-│   ├── architecture/
-│   │   ├── overview.md
-│   │   ├── data-flow/                 ← legacy is data-centric
-│   │   │   ├── batch-cycle.mmd
-│   │   │   └── online-tx-flow.mmd
-│   │   ├── diagrams/                  ← jobs, transactions, copybook graph (Mermaid)
-│   │   └── decisions/                 ← ADRs
-│   │
-│   ├── data/                          ← first-class concern in legacy
-│   │   ├── schemas/                   ← DB2/IMS DDL, SAP DDIC, IBM i DDS
-│   │   ├── copybooks-catalog.md
-│   │   └── lineage/
-│   │
-│   ├── programs/                      ← one md per significant program
-│   ├── jobs/                          ← scheduled work
-│   ├── interfaces/                    ← inbound / outbound boundaries
-│   ├── skills/*.md                    ← CANONICAL agent skills
-│   ├── runbooks/*.md                  ← CANONICAL runbooks (md + frontmatter)
-│   ├── investigations/
-│   │   └── adr-archaeology/           ← interview-augmented ADR capture
-│   └── modernization/                 ← bridge folder during migration
-│
-├── .claude/skills/<name>/SKILL.md     ← GENERATED by `doctyze render`
-├── .cursor/rules/<name>.md            ← GENERATED
-├── .holmes/runbooks/<id>.yaml         ← GENERATED
-├── .github/workflows/doctyze-review.yml
-│
-├── src/                               ← organized by legacy convention
-│   ├── cobol/ | abap/ | rpg/ | vb6/ | delphi/
-│   ├── jcl/                           ← COBOL-specific
-│   └── ddl/
-│
-└── tools/
-    ├── ingest-from-endevor.sh         ← legacy-SCM bridges
-    └── round-trip.sh
-```
-
-## Quick start
+## Commands
 
 ```bash
-# Install (choose one)
-pip install actyze-doctyze                        # Python/PyPI
-npm install -g @actyze/doctyze                    # Node/npm
-brew install actyze/tap/doctyze                   # macOS
-docker pull ghcr.io/actyze/doctyze:latest         # any platform
-
-# Configure your LLM
-export ANTHROPIC_API_KEY=...                      # Claude (recommended)
-# Or OPENAI_API_KEY, GOOGLE_API_KEY, AZURE_OPENAI_*, or local (Ollama)
-
-# Scaffold any repo
-cd ~/work/your-repo
-doctyze init                                      # auto-detects stack
-doctyze verify                                    # check for drift
-doctyze pr-bot install                            # wire up PR enforcement
+doctyze init                    # guided front door: scaffold + install skills + next steps
+doctyze consolidate [--apply]   # scattered docs -> canonical docs/ (propose, then apply)
+doctyze bootstrap               # scaffold structure + hand a generation manifest to your agent
+doctyze distribute              # fan skills out to .claude/skills, .cursor/rules, AGENTS.md
+doctyze watch [--install]       # flag docs whose anchored code changed (warn-first pre-commit hook)
 ```
 
-## Execution by stack
-
-### Modern stack (already in git)
-
-```bash
-# Java/Spring (auto-detected from pom.xml or build.gradle)
-doctyze init
-
-# Python (auto-detected from pyproject.toml)
-doctyze init
-
-# Force the stack if auto-detect is wrong
-doctyze init --stack=java-spring
-```
-
-### Legacy stack (depends on where the code lives)
-
-```bash
-# COBOL on mainframe (Endevor / ChangeMan / Librarian)
-doctyze ingest endevor \
-  --connection endevor://mainframe.corp:1610/CICSDEV \
-  --subsystem PAYROLL \
-  --output ./payroll-app
-cd payroll-app && doctyze init --stack=cobol
-
-# SAP ABAP (via abapGit)
-abapgit pull ZPACKAGE_HR
-cd ZPACKAGE_HR && doctyze init --stack=abap
-
-# IBM i RPG (via ARCAD)
-doctyze ingest ibm-i --connection arcad://ibmi.corp/INVENTORY --output ./inv
-cd inv && doctyze init --stack=ibm-i-rpg
-
-# Legacy already in git (VB6 / .NET Framework / PowerBuilder / Delphi)
-doctyze init --stack=delphi
-```
-
-### Air-gapped / regulated enterprise mode
+Generated docs carry a freshness **anchor** declaring which code makes them stale:
 
 ```yaml
-# .doctyze.yaml
-llm:
-  provider: ollama
-  endpoint: http://internal-llama.corp:11434
-  model: llama-3.3-70b
-  fallback: deny                                  # never send anything off-prem
-extraction:
-  retain_source_locally: true
-  audit_log: /var/log/doctyze/
+---
+doctyze:
+  artifact: spec
+  generated_by: write-spec
+  affects: [src/payments/**]
+  last_verified: 2026-06-15
+---
 ```
-
-## The canonical-source-of-truth model
-
-Doctyze never asks you to maintain the same skill or runbook in five
-different vendor formats. **You author once in markdown; Doctyze renders
-into every vendor format you target.**
-
-```
-docs/skills/<name>.md                ← you edit this (markdown + YAML frontmatter)
-docs/runbooks/<name>.md              ← you edit this (markdown + frontmatter)
-                       │
-                       ▼  doctyze render
-       ┌──────────────────────────────────┐
-       │  .claude/skills/<name>/SKILL.md  │  ← generated for Claude Code
-       │  .cursor/rules/<name>.md         │  ← generated for Cursor
-       │  .github/copilot-instructions.md │  ← generated for Copilot (concatenated)
-       │  .windsurfrules                  │  ← generated for Windsurf (concatenated)
-       │  .holmes/runbooks/<id>.yaml      │  ← generated for HolmesGPT
-       └──────────────────────────────────┘
-```
-
-Which vendors get rendered is controlled by `agent_targets:` in
-`.doctyze.yaml`. Run `doctyze render --list` to see the available renderers.
-Re-render anytime with `doctyze render`; use `doctyze render --check` in CI
-to fail when generated files are out of sync.
-
-The `AGENTS.md` file at the repo root is itself canonical — it's the AAIF
-universal standard that every AI tool (Codex CLI, Claude Code, Cursor,
-Copilot, Cline, Windsurf, Aider) already reads. No render step needed.
-
-## How Doctyze fits with the rest of your toolchain
-
-Doctyze does **not** compete with PR review agents (CodeRabbit, Greptile,
-Qodo, Bito, Copilot Code Review, internal copilots) or coding assistants
-(Claude Code, Cursor, Copilot, Windsurf, Cline). It runs **alongside**
-them, filling a gap none of them treat as a first-class concern: keeping
-the documentation in sync with the code.
-
-| Concern | Doctyze | Your PR review agent (CodeRabbit / Greptile / Qodo / …) | Your coding assistant (Claude Code / Cursor / …) |
-|---|:---:|:---:|:---:|
-| Code correctness, security, style | ❌ | ✅ | (proposes code) |
-| Documentation drift (ADRs, runbooks, specs, OpenAPI) | ✅ | ❌ | ❌ |
-| Pattern conformance against `docs/skills/` | ✅ | ❌ (no skills concept) | reads skills if rendered |
-| Test presence | ⚠️ presence only | ✅ | (proposes tests) |
-| ADR archaeology + intent preservation | ✅ | ❌ | reads if available |
-| Codebase context for the AI | ✅ (via canonical layer) | varies | varies |
-
-The Doc Guard plugs into whichever PR review agent you already use. They
-post different comments, cover different ground, never conflict.
-
-## The three pillars
-
-| Pillar | What it does | When it runs |
-|---|---|---|
-| **Scaffolder** | Scans repo, detects stack, emits canonical structure with confidence markers | Once per repo (`doctyze init`); on demand |
-| **Renderer** | Compiles canonical `docs/skills/` and `docs/runbooks/` into the vendor formats configured in `.doctyze.yaml` | Automatically at the end of `doctyze init`; on every push (GitHub Action); manually via `doctyze render` |
-| **Doc Guard** | On each PR, checks whether docs were updated for the code change. Posts inline suggestions; can block merge. **Runs alongside whatever PR review agent you already use.** | Continuously (GitHub Action / GitLab CI / Bitbucket) |
-
-## Doc Guard — what gets blocked
-
-Default rules (configurable in `.doctyze.yaml`):
-
-| Trigger | Action |
-|---|---|
-| Public API changed without `docs/api/openapi.yaml` update | **Block** + suggest the OpenAPI diff |
-| New external dependency added without an accompanying ADR | **Block** + propose ADR stub |
-| New `try/except` or error class without runbook entry | **Block** + suggest runbook stub |
-| Existing accepted ADR contradicted without a superseding ADR | **Block** + identify the contradicted ADR |
-| ADR file deleted | **Block** unconditionally (ADRs are append-only) |
-| Pure refactor (whitespace, rename, no behavior change) | **Pass silently** |
-
-Enforcement levels: `warn-only` / `block-required` / `block-all`. Each
-repo picks one in `.doctyze.yaml`.
-
-See [`doc-guard-action/README.md`](doc-guard-action/README.md) for the
-full Action reference, including how to run it next to CodeRabbit /
-Greptile / Qodo / Copilot Code Review / your internal copilot.
-
-## Project structure
-
-```
-doctyze/                               this repo
-├── README.md                          ← you are here
-├── LICENSE                            ← Apache 2.0
-├── AGENTS.md                          ← agent context for contributors
-├── CONTRIBUTING.md
-│
-├── cli/                               ← `doctyze` CLI (Python)
-│   └── src/doctyze/
-│       ├── cli.py                     ← Click command surface
-│       ├── detector.py                ← stack detection from file signatures
-│       ├── scaffolder.py              ← template → repo copier
-│       ├── extractor.py               ← LLM-driven placeholder filling
-│       ├── llm/                       ← pluggable LLM backends (claude/openai/ollama/none)
-│       └── renderers/                 ← canonical → vendor-format renderers
-│                                       (claude, cursor, copilot, windsurf, holmes)
-│
-├── templates/                         ← canonical structures emitted by `doctyze init`
-│   ├── modern/                        ← Java/Python/Node/React/Go
-│   └── legacy/                        ← COBOL/ABAP/IBM i/VB6/.NET Fx/PB/Delphi
-│
-├── doc-guard-action/                  ← the GitHub Action (composite, action.yml)
-│
-└── examples/                          ← end-to-end demo repos
-    └── python-fastapi-orders/         ← the worked example
-```
-
-## Roadmap
-
-| Version | Scope |
-|---|---|
-| **v0.1** (8–12 weeks) | Modern: Java/Spring + Python · PR Review Action (warn-only) · 5 default skills per stack · 1 demo (Spring PetClinic) |
-| **v0.2** (3–4 months) | Add Node/React, Go to modern · Add **COBOL** + **SAP ABAP** to legacy · PR Review in block-required mode · GitLab CI · Backstage TechDocs adapter |
-| **v0.3** (5–6 months) | Add IBM i RPG, VB6, .NET Framework · Interview-augmented ADR archaeology · Bitbucket / Azure DevOps |
-| **v1.0** | PowerBuilder, Delphi · plugin SDK · candidate for AAIF / CNCF Sandbox |
-
-## See it in action
-
-A complete worked example lives at
-[`examples/python-fastapi-orders/`](examples/python-fastapi-orders/) — a small
-FastAPI orders service with:
-
-- 3 hand-authored ADRs in MADR format (including a non-obvious **fail-open**
-  decision that AI agents *must not "fix"*)
-- 2 canonical skills under `docs/skills/`
-- 1 canonical runbook with frontmatter that drives Holmes YAML generation
-- The full set of vendor files (`.claude/skills/`, `.cursor/rules/`,
-  `.github/copilot-instructions.md`, `.holmes/runbooks/`) rendered from
-  the canonical sources
-
-Read the example's [README](examples/python-fastapi-orders/README.md) to see
-how the canonical-source model plays out in practice.
 
 ## Status
 
-**Pre-alpha. v0.0.2.** Scaffolder, templates, renderer pipeline, drift-check
-Action, and one worked example are all in place. LLM-driven extraction is the
-next milestone (v0.1). Track progress in
-[GitHub Issues](https://github.com/actyze/doctyze/issues).
+v3 is a ground-up rewrite (the v2 skills-first design is superseded; in git history). The engine — consolidate, bootstrap, distribute, watch — is built and tested (`pytest`), and validated end-to-end on a real service repo. The distribution/release step (PyPI package, Claude Code plugin, CI action) is in progress; until then, run from source:
 
-## Contributing
+```bash
+pip install -e .
+doctyze --help
+```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). The highest-leverage contributions
-right now are language extractors — especially for legacy stacks. PRs welcome.
+See `docs/planning/DOCTYZE_V3_PLAN.md`, `docs/planning/DOCTYZE_V3_BUILD_PLAN.md`, and `docs/architecture/decisions/0003-pivot-to-context-layer-generator.md`.
 
 ## License
 
-[Apache 2.0](LICENSE).
+Apache 2.0. Free and open source for everyone.

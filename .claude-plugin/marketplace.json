@@ -1,0 +1,11 @@
+{
+  "name": "doctyze",
+  "owner": { "name": "Actyze" },
+  "plugins": [
+    {
+      "name": "doctyze",
+      "source": "./plugins/doctyze",
+      "description": "Generate and maintain a documentation context layer for any repo, using the LLM already in your IDE."
+    }
+  ]
+}
