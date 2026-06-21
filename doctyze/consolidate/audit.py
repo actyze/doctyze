@@ -91,9 +91,13 @@ def classify(path: Path, root: Path) -> ArtifactKind:
     # Filename hints.
     if _has(name, "adr", "decision-record"):
         return ArtifactKind.ADR
-    if _has(name, "runbook", "incident", "deploy", "oncall", "on-call", "rollback"):
+    if _has(name, "runbook", "incident", "deploy", "oncall", "on-call", "rollback",
+            "operational", "operations", "playbook", "disaster", "failover"):
         return ArtifactKind.RUNBOOK
-    if _has(name, "postmortem", "post-mortem", "investigation", "rca"):
+    # NOTE: use "logging" (not "log") so "changelog" doesn't match here.
+    if _has(name, "postmortem", "post-mortem", "investigation", "rca", "logging",
+            "observability", "monitor", "monitoring", "metrics", "telemetry",
+            "tracing", "alerting"):
         return ArtifactKind.OBSERVABILITY
     if _has(name, "architecture", "design", "c4", "overview", "diagram"):
         return ArtifactKind.ARCHITECTURE

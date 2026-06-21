@@ -51,6 +51,21 @@ def test_plan_moves_and_collision(tmp_path: Path):
     assert any(o.action == "renumber" for o in plan.ops)
 
 
+def test_observability_and_runbook_keywords(tmp_path: Path):
+    from doctyze.consolidate.audit import classify
+    cases = {
+        "LOGGING_IMPROVEMENT_PLAN.md": ArtifactKind.OBSERVABILITY,
+        "monitoring-setup.md": ArtifactKind.OBSERVABILITY,
+        "deployment.md": ArtifactKind.RUNBOOK,
+        "operational-playbook.md": ArtifactKind.RUNBOOK,
+        # guard: "changelog" must NOT match the "logging" rule
+        "CHANGELOG_FIXES.md": ArtifactKind.SPEC,
+    }
+    for name, expected in cases.items():
+        (tmp_path / name).write_text("# x\n")
+        assert classify(tmp_path / name, tmp_path) is expected, name
+
+
 def test_diagrams_subdir_is_canonical_not_pulled_into_architecture(tmp_path: Path):
     # Regression: files under docs/architecture/diagrams/ are DIAGRAM and already
     # canonical — they must NOT be moved up to docs/architecture/.
