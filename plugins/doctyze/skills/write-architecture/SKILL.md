@@ -1,30 +1,18 @@
 ---
 name: write-architecture
-description: Reverse-engineer architecture docs and Mermaid architecture/integration diagrams from the codebase.
+description: Reverse-engineer architecture docs + Mermaid diagrams from the codebase into docs/architecture/.
 ---
 # write-architecture
-Produce `docs/architecture/overview.md` plus Mermaid diagrams in `docs/architecture/diagrams/`.
+Produce `docs/architecture/overview.md` and Mermaid diagrams in `docs/architecture/diagrams/`.
 
-## overview.md sections
-- **Purpose** of the system.
-- **Component map** — the real modules/services and their responsibilities (cite paths).
-- **Key flows** — the main request/data flows.
-- **Integrations** — external systems, datastores, queues.
-- Links to each diagram.
+## Before you write
+Read existing architecture docs; refresh/extend rather than duplicate.
 
-## Diagrams (Mermaid, in diagrams/)
-- A **pipeline/component** diagram (`flowchart`) of the system's parts.
-- A **sequence** diagram for the most important flow.
-- An **integration** diagram if there are external systems.
-Mark optional/external nodes distinctly. Ground every node in real code — never invent components.
+## How
+1. Map the system from code: entry points, components/modules, data stores, integrations — cite real paths.
+2. **Verify diagram edges against the real wiring** (e.g. the workflow/router file), not assumption.
+3. `overview.md`: component map (with paths), key flows, integrations, links to the diagrams.
+4. Ground every claim in real code; never invent components.
 
-## Anchor (required)
-```yaml
----
-doctyze:
-  artifact: architecture     # use `diagram` for files in diagrams/
-  generated_by: write-architecture
-  affects: [<top-level source dirs>/**]
-  last_verified: <YYYY-MM-DD>
----
-```
+## Anchor (narrow)
+`overview.md` → the top-level package dirs that define structure. Each diagram → the specific subsystem it draws (e.g. `[app/graph/**, app/agents/**]`), not `app/**`.

@@ -7,7 +7,6 @@ code makes it stale:
     doctyze:
       artifact: spec
       generated_by: write-spec
-      source: [src/payments/]
       affects: [src/payments/**, pom.xml]
       last_verified: 2026-06-14
     ---
@@ -56,7 +55,6 @@ def parse_anchor(text: str) -> Anchor | None:
     return Anchor(
         artifact=kind,
         affects=list(block.get("affects", []) or []),
-        source=list(block.get("source", []) or []),
         generated_by=block.get("generated_by"),
         last_verified=block.get("last_verified"),
     )
@@ -67,8 +65,6 @@ def render_frontmatter(anchor: Anchor) -> str:
     block: dict = {"artifact": anchor.artifact.value}
     if anchor.generated_by:
         block["generated_by"] = anchor.generated_by
-    if anchor.source:
-        block["source"] = anchor.source
     if anchor.affects:
         block["affects"] = anchor.affects
     if anchor.last_verified:

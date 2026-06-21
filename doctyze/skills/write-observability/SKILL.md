@@ -1,14 +1,17 @@
 ---
 name: write-observability
-description: Document incident investigation, metrics, logging, and alerting under docs/observability/.
+description: Incident-investigation, metrics, logging, and alerting docs under docs/observability/.
 ---
 # write-observability
-Write `docs/observability/` docs covering how to operate and investigate this service.
+Write `docs/observability/` docs covering how to investigate incidents.
 
-## Sections
-- **Signals & dashboards** — key metrics, logs, traces, where to find them.
-- **Triage** — how to diagnose the common failure modes.
-- **Escalation** — who/what to escalate to.
-- **Past investigations** — blameless postmortems with root cause.
+## Before you write
+Read existing observability/logging docs; refresh, don't duplicate.
 
-Read the logging/metrics/tracing/alerting config; cite it. Add the freshness anchor (`affects` the observability config).
+## How
+1. Read logging/metrics/tracing/alerting config and the error-code registry — cite real modules.
+2. Document: key signals & dashboards, how to triage common failures, escalation, the error-code map, resilience/breaker monitoring.
+3. Ground in real code; honest about gaps.
+
+## Anchor (narrow)
+`affects:` = the observability/logging/resilience/exceptions modules, not `app/**`.

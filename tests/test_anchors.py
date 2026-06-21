@@ -9,7 +9,6 @@ def test_roundtrip():
     anchor = Anchor(
         artifact=ArtifactKind.SPEC,
         affects=["src/payments/**", "pom.xml"],
-        source=["src/payments/"],
         generated_by="write-spec",
         last_verified="2026-06-14",
     )
@@ -18,7 +17,6 @@ def test_roundtrip():
     assert parsed is not None
     assert parsed.artifact is ArtifactKind.SPEC
     assert parsed.affects == ["src/payments/**", "pom.xml"]
-    assert parsed.source == ["src/payments/"]
     assert parsed.generated_by == "write-spec"
     assert parsed.last_verified == "2026-06-14"
 

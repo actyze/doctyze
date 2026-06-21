@@ -60,6 +60,10 @@ def test_observability_and_runbook_keywords(tmp_path: Path):
         "operational-playbook.md": ArtifactKind.RUNBOOK,
         # guard: "changelog" must NOT match the "logging" rule
         "CHANGELOG_FIXES.md": ArtifactKind.SPEC,
+        # standards/conventions route to guides/, not specs/
+        "coding_standards.md": ArtifactKind.GUIDE,
+        "testing_standards.md": ArtifactKind.GUIDE,
+        "naming-conventions.md": ArtifactKind.GUIDE,
     }
     for name, expected in cases.items():
         (tmp_path / name).write_text("# x\n")

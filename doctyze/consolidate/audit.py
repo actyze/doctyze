@@ -99,6 +99,8 @@ def classify(path: Path, root: Path) -> ArtifactKind:
             "observability", "monitor", "monitoring", "metrics", "telemetry",
             "tracing", "alerting"):
         return ArtifactKind.OBSERVABILITY
+    if _has(name, "standards", "convention", "guideline", "style-guide", "styleguide", "best-practice", "how-to", "howto"):
+        return ArtifactKind.GUIDE
     if _has(name, "architecture", "design", "c4", "overview", "diagram"):
         return ArtifactKind.ARCHITECTURE
     if _has(name, "spec", "requirements", "openapi", "api", "feature"):

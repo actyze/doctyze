@@ -1,29 +1,19 @@
 ---
 name: write-spec
-description: Reverse-engineer a feature/capability specification from the code, one file per capability, into docs/specs/.
+description: Reverse-engineer a grounded feature specification from the code (one per capability) into docs/specs/.
 ---
 # write-spec
-Write `docs/specs/<capability>.md` — one file per major capability.
+Write `docs/specs/<feature>.md` — one per major feature/capability.
 
-## Sections (use these)
-- **Purpose** — what the capability does, in one or two lines.
-- **Interface** — the CLI/API/entry points (commands, endpoints, functions).
-- **Behavior** — the real steps/logic, **citing source paths** (link to the files).
-- **Inputs / Outputs** — what it consumes and produces.
-- **Edge cases** — error handling, empty/idempotent/limits, known limitations.
+## Before you write (read-existing-first)
+- Survey `docs/`. If a large doc (e.g. a TECHNICAL_DOCUMENTATION) already covers features, **split/refresh** it into per-feature specs and cite/supersede it — do NOT write a parallel duplicate.
+- Maintain `docs/specs/index.md` as a table of the specs you write.
 
-## Rules
-- Ground every statement in code that exists. Do NOT describe intended-but-absent behavior. Link to source files.
-- One capability per file; keep it verifiable, not marketing.
+## How (match this depth bar)
+1. Find the feature's code (controller/handler/service/agent) and its entry function.
+2. **Read it**, then document what it ACTUALLY does — cite the entry point as `path:line` and name real functions/constants.
+3. Sections: `## Purpose` · `## Entry point` (file:line) · `## Inputs` · `## Behavior` (numbered, grounded, cite modules) · `## Outputs` · `## Edge cases` · `## Related`.
+4. Be honest: flag stubs, experimental code, bugs, and where existing docs disagree with the code.
 
-## Anchor (required) — scope `affects` to THIS capability's code
-```yaml
----
-doctyze:
-  artifact: spec
-  generated_by: write-spec
-  source: [src/<area>/]
-  affects: [src/<area>/**]   # globs for the exact code this spec describes — precise = good freshness
-  last_verified: <YYYY-MM-DD>
----
-```
+## Anchor (narrow)
+`affects:` = the specific module(s) this spec describes (e.g. `[app/agents/intent_agent.py]`), never the whole tree.

@@ -13,6 +13,7 @@ class ArtifactKind(str, Enum):
     DIAGRAM = "diagram"
     SKILL = "skill"
     OBSERVABILITY = "observability"
+    GUIDE = "guide"  # coding/testing standards, conventions, how-to guides
     AGENT_CONTEXT = "agent_context"  # AGENTS.md / CLAUDE.md / .cursor rules
     KEEP_IN_PLACE = "keep_in_place"  # local README next to code
     STALE = "stale"
@@ -35,8 +36,7 @@ class Anchor:
     """
 
     artifact: ArtifactKind
-    affects: list[str] = field(default_factory=list)
-    source: list[str] = field(default_factory=list)  # informational provenance; drift keys off `affects`
+    affects: list[str] = field(default_factory=list)  # globs whose change makes this doc stale
     generated_by: str | None = None
     last_verified: str | None = None
 

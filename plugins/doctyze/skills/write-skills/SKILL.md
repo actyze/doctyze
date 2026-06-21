@@ -1,14 +1,17 @@
 ---
 name: write-skills
-description: Generate development and testing assistant skills/rules tailored to this repo's stack and conventions.
+description: Generate dev & testing assistant skills/rules tailored to this repo's stack and conventions, into docs/skills/.
 ---
 # write-skills
 Write `docs/skills/` entries that help an AI agent develop and test in THIS repo.
 
-## Include
-- **Build & run** — the exact commands.
-- **Test** — how to run/write tests here.
-- **Conventions** — naming, structure, patterns the codebase follows.
-- **Gotchas** — non-obvious pitfalls.
+## Before you write
+Read existing CONTRIBUTING / dev docs and the test layout.
 
-Detect these from the code, not assumptions. These get fanned out to `.claude/skills` / `.cursor/rules` / `AGENTS.md` by `doctyze distribute`. Add the freshness anchor.
+## How
+1. Detect the stack, test frameworks, build/run/test commands, and conventions — from the code.
+2. Write concise, actionable skills: how to build, run, test; conventions to follow; gotchas. Cite real paths/commands.
+3. These are fanned out to agent files by `doctyze distribute`.
+
+## Anchor (narrow)
+`affects:` = build/test config (`pyproject.toml`, `requirements.txt`, `tests/`) + the specific dirs the skill is about.

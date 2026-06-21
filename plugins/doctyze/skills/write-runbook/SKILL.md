@@ -1,27 +1,17 @@
 ---
 name: write-runbook
-description: Create operational and deployment runbooks under docs/runbooks/ from the ops/CI/deploy configuration.
+description: Operational + deployment runbooks under docs/runbooks/, grounded in the ops/CI/deploy config.
 ---
 # write-runbook
-Write step-by-step runbooks in `docs/runbooks/` (one per concern; deployment lives here too).
+Write runbooks in `docs/runbooks/` (including deployment).
 
-## Sections
-- **Local setup** — install/build/run locally.
-- **Test** — how to run the test suite.
-- **Deploy** — how the service ships, per environment (cite the pipelines/IaC).
-- **Rollback** — how to revert a bad deploy.
-- **Common operations** — routine tasks, plus incident-specific runbooks (e.g. `high-error-rate.md`).
+## Before you write
+Read existing ops/deploy docs; refresh, don't duplicate.
 
-## Rules
-Read CI/CD pipelines, Dockerfiles, IaC, scripts, Makefile targets — describe what they actually do.
+## How
+1. Read CI/CD pipelines, Dockerfile, IaC, scripts, health endpoints, `settings`.
+2. Document: build/run locally, deploy per environment, rollback, common operational tasks. One runbook per concern (`deployment.md`, `operations.md`, incident-specific ones).
+3. Ground in real files; cite paths.
 
-## Anchor (required) — `affects` the ops files this runbook describes
-```yaml
----
-doctyze:
-  artifact: runbook
-  generated_by: write-runbook
-  affects: [.github/workflows/**, Dockerfile, scripts/**]
-  last_verified: <YYYY-MM-DD>
----
-```
+## Anchor (narrow)
+`affects:` = the deploy/ops files (Dockerfile, pipeline yaml, scripts, settings), not `app/**`.

@@ -4,14 +4,15 @@ description: Generate and maintain a complete documentation context layer for th
 ---
 # Doctyze
 
-Build and maintain the documentation context layer for this repository, for both humans and AI agents. You (the agent) do the writing using your own model; the `doctyze` CLI handles deterministic mechanics (file moves, scaffolding, drift detection, fan-out).
+Build and maintain the documentation context layer for this repository, for humans and AI agents. You (the agent) do the writing with your own model; the `doctyze` CLI handles deterministic mechanics (file moves, scaffolding, drift detection, fan-out).
 
 ## Steps
-1. **Consolidate** existing scattered docs: run `doctyze consolidate`, review `.doctyze/consolidation-plan.md`, then `doctyze consolidate --apply`. Non-destructive.
-2. **Scaffold + plan**: run `doctyze bootstrap`. Read `.doctyze/bootstrap-manifest.md`.
-3. **Generate** each artifact in the manifest by running the matching skill below, grounded in the actual code. Add a Doctyze freshness anchor to every file you create.
-4. **Distribute**: run `doctyze distribute` to fan the skills/rules out to agent files.
-5. **Keep fresh**: run `doctyze watch --install`.
+1. **Consolidate** existing scattered docs: `doctyze consolidate`, review `.doctyze/consolidation-plan.md`, then `doctyze consolidate --apply`. Non-destructive.
+2. **Scaffold + plan**: `doctyze bootstrap`. Read `.doctyze/bootstrap-manifest.md`.
+3. **Survey existing docs FIRST** (critical): before generating anything, read what already lives in `docs/`. If a topic is already documented — especially a large existing doc — **refresh or split it** into the canonical structure. Never write a doc that duplicates one that exists; link to or supersede it.
+4. **Generate** each artifact in the manifest by running the matching skill, grounded in the actual code. Add a freshness anchor to every file you create.
+5. **Distribute**: `doctyze distribute`.
+6. **Keep fresh**: `doctyze watch --install`.
 
 ## Generation skills
 `write-architecture` · `write-spec` · `write-adr` · `write-runbook` · `write-observability` · `write-skills`
@@ -20,10 +21,10 @@ Build and maintain the documentation context layer for this repository, for both
 ```yaml
 ---
 doctyze:
-  artifact: spec            # spec|adr|runbook|architecture|observability|skill
+  artifact: spec            # spec|adr|runbook|architecture|observability|guide|skill
   generated_by: write-spec
-  source: [src/<area>/]
-  affects: [src/<area>/**]  # globs that make this doc stale when changed
+  affects: [<the specific module(s) this doc describes>]
   last_verified: <YYYY-MM-DD>
 ---
 ```
+**Keep `affects` narrow** — the exact files/dirs the doc is about, never `app/**` or `src/**`. Broad anchors make every doc perpetually "stale" and train readers to ignore the signal.

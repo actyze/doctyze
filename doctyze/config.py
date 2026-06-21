@@ -33,6 +33,8 @@ SECTIONS: dict[str, Section] = {
                              "Operational runbooks, including deployment."),
     "observability": Section("docs/observability", ArtifactKind.OBSERVABILITY,
                              "Incident investigations, metrics, logging, alerting."),
+    "guides":        Section("docs/guides", ArtifactKind.GUIDE,
+                             "Coding/testing standards, conventions, how-to guides.", scaffold=False),
     "skills":        Section("docs/skills", ArtifactKind.SKILL,
                              "Generated dev/testing skills.", scaffold=False),
     "archive":       Section("docs/archive", ArtifactKind.STALE,
@@ -49,5 +51,5 @@ CANONICAL_LAYOUT: dict[str, str] = {key: s.path for key, s in SECTIONS.items()}
 KIND_TO_DIR: dict[ArtifactKind, str] = {
     s.kind: s.path
     for key, s in SECTIONS.items()
-    if key in ("specs", "decisions", "runbooks", "architecture", "diagrams", "observability", "skills")
+    if key in ("specs", "decisions", "runbooks", "architecture", "diagrams", "observability", "guides", "skills")
 }
