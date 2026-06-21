@@ -102,6 +102,18 @@ def bootstrap(path: str) -> None:
 
 @main.command()
 @click.argument("path", default=".")
+def index(path: str) -> None:
+    """(Re)build the docs/ navigation index — a table of contents for humans and agents."""
+    root = Path(path).resolve()
+    written = api.build_index(root)
+    if not written:
+        click.echo("No docs/ to index yet.")
+        return
+    click.echo(f"Wrote {len(written)} index file(s): docs/index.md + per-section tables.")
+
+
+@main.command()
+@click.argument("path", default=".")
 def distribute(path: str) -> None:
     """Fan the Doctyze skills out to agent files (.claude/skills, .cursor/rules, AGENTS.md)."""
     root = Path(path).resolve()

@@ -51,6 +51,7 @@ class BootstrapResult:
 
 def bootstrap(root: str | Path) -> BootstrapResult:
     from .generate.architecture import run_codeboarding
+    from .generate.index import build_indexes
     from .generate.manifest import build_manifest
     from .generate.scaffold import ensure_structure
     from .generate.stack import detect_stack
@@ -60,7 +61,14 @@ def bootstrap(root: str | Path) -> BootstrapResult:
     stack = detect_stack(root)
     diagrams = run_codeboarding(root)
     manifest = build_manifest(root, stack, diagrams_done=bool(diagrams))
+    build_indexes(root)  # index whatever exists now; re-run `doctyze index` after generating
     return BootstrapResult(created, stack, bool(diagrams), manifest)
+
+
+def build_index(root: str | Path) -> list[Path]:
+    from .generate.index import build_indexes
+
+    return build_indexes(Path(root).resolve())
 
 
 def distribute(root: str | Path) -> list[Path]:

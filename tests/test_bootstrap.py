@@ -52,6 +52,20 @@ def test_manifest_mentions_stack_and_skills(tmp_path: Path):
     assert "write-spec" in md and "write-architecture" in md
 
 
+def test_index_builds_navigation(tmp_path: Path):
+    from doctyze.generate.index import build_indexes
+    from doctyze.generate.scaffold import ensure_structure
+
+    ensure_structure(tmp_path)
+    (tmp_path / "docs" / "specs" / "foo.md").write_text("---\n---\n# Foo Feature\n\nDoes the foo thing.\n")
+    written = build_indexes(tmp_path)
+    assert written
+    top = (tmp_path / "docs" / "index.md").read_text()
+    assert "# Documentation" in top and "Specs" in top
+    spec_index = (tmp_path / "docs" / "specs" / "index.md").read_text()
+    assert "Foo Feature" in spec_index and "Does the foo thing" in spec_index
+
+
 def test_generation_skills_have_valid_frontmatter():
     skills_dir = Path(__file__).resolve().parent.parent / "doctyze" / "skills"
     skill_files = list(skills_dir.glob("*/SKILL.md"))

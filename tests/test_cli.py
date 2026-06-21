@@ -39,7 +39,7 @@ def test_init_scaffolds_and_distributes(tmp_path):
 def test_all_subcommands_run():
     runner = click.testing.CliRunner()
     # Run in an isolated temp dir — these commands now create files.
-    for cmd in ("init", "consolidate", "bootstrap", "distribute", "watch"):
+    for cmd in ("init", "consolidate", "bootstrap", "index", "distribute", "watch"):
         with runner.isolated_filesystem():
             res = runner.invoke(main, [cmd])
             assert res.exit_code == 0, f"{cmd} failed: {res.output}"

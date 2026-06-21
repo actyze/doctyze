@@ -10,9 +10,10 @@ Build and maintain the documentation context layer for this repository, for huma
 1. **Consolidate** existing scattered docs: `doctyze consolidate`, review `.doctyze/consolidation-plan.md`, then `doctyze consolidate --apply`. Non-destructive.
 2. **Scaffold + plan**: `doctyze bootstrap`. Read `.doctyze/bootstrap-manifest.md`.
 3. **Survey existing docs FIRST** (critical): before generating anything, read what already lives in `docs/`. If a topic is already documented — especially a large existing doc — **refresh or split it** into the canonical structure. Never write a doc that duplicates one that exists; link to or supersede it.
-4. **Generate** each artifact in the manifest by running the matching skill, grounded in the actual code. Add a freshness anchor to every file you create.
-5. **Distribute**: `doctyze distribute`.
-6. **Keep fresh**: `doctyze watch --install`.
+4. **Generate** each artifact in the manifest by running the matching skill, grounded in the actual code. Add a freshness anchor to every file you create. Also run `write-adr` to capture significant decisions already embodied in the code.
+5. **Index**: `doctyze index` — (re)build the docs/ table of contents so humans and agents can navigate.
+6. **Distribute**: `doctyze distribute`.
+7. **Keep fresh**: `doctyze watch --install`.
 
 ## Generation skills
 `write-architecture` · `write-spec` · `write-adr` · `write-runbook` · `write-observability` · `write-skills`

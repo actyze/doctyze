@@ -29,6 +29,11 @@ def bootstrap(path: str = ".") -> str:
     return api.bootstrap(Path(path)).manifest
 
 
+def rebuild_index(path: str = ".") -> str:
+    """(Re)build the docs/ navigation index (table of contents) for humans and agents."""
+    return f"Wrote {len(api.build_index(Path(path)))} index file(s)."
+
+
 def distribute(path: str = ".") -> str:
     """Fan the Doctyze skills out to agent files (.claude/skills, .cursor/rules, AGENTS.md)."""
     return f"Distributed skills to {len(api.distribute(Path(path)))} agent file(s)."
@@ -47,7 +52,7 @@ def check_freshness(path: str = ".", staged: bool = False) -> str:
     return f"{len(stale)} doc(s) may be stale:\n" + "\n".join(lines)
 
 
-_TOOLS = [consolidate_plan, consolidate_apply, bootstrap, distribute, check_freshness]
+_TOOLS = [consolidate_plan, consolidate_apply, bootstrap, rebuild_index, distribute, check_freshness]
 
 
 def build_server():
