@@ -42,10 +42,12 @@ SECTIONS: dict[str, Section] = {
 # Derived views — the only places these are needed; both come from SECTIONS.
 CANONICAL_LAYOUT: dict[str, str] = {key: s.path for key, s in SECTIONS.items()}
 
-# Artifact kind -> canonical move target, for the consolidator. (DIAGRAM is
-# scaffolded, never a move target, so it's intentionally absent.)
+# Artifact kind -> canonical move target, for the consolidator. Includes
+# 'diagrams' so diagram files under docs/architecture/diagrams/ are recognized as
+# already-canonical (and stray diagrams move there) rather than pulled up to
+# docs/architecture/.
 KIND_TO_DIR: dict[ArtifactKind, str] = {
     s.kind: s.path
     for key, s in SECTIONS.items()
-    if key in ("specs", "decisions", "runbooks", "architecture", "observability", "skills")
+    if key in ("specs", "decisions", "runbooks", "architecture", "diagrams", "observability", "skills")
 }

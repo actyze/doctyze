@@ -76,6 +76,8 @@ def classify(path: Path, root: Path) -> ArtifactKind:
         return ArtifactKind.OBSERVABILITY
     if "skills" in parts:
         return ArtifactKind.SKILL
+    if "diagrams" in parts:  # must precede 'architecture' (diagrams live under it)
+        return ArtifactKind.DIAGRAM
     if "architecture" in parts:
         return ArtifactKind.ARCHITECTURE
 

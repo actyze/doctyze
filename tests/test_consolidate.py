@@ -51,6 +51,20 @@ def test_plan_moves_and_collision(tmp_path: Path):
     assert any(o.action == "renumber" for o in plan.ops)
 
 
+def test_diagrams_subdir_is_canonical_not_pulled_into_architecture(tmp_path: Path):
+    # Regression: files under docs/architecture/diagrams/ are DIAGRAM and already
+    # canonical — they must NOT be moved up to docs/architecture/.
+    d = tmp_path / "docs" / "architecture" / "diagrams"
+    d.mkdir(parents=True)
+    (d / "index.md").write_text("# Diagrams\n")
+    (d / "system.md").write_text("# System diagram\n")
+    docs = audit_docs(tmp_path)
+    kinds = {Path(x.path).name: x.kind for x in docs}
+    assert kinds["system.md"] is ArtifactKind.DIAGRAM
+    plan = build_plan(tmp_path, docs)
+    assert not any("diagrams" in o.src for o in plan.ops), "diagram files should stay put"
+
+
 def test_apply_is_nondestructive_and_idempotent(tmp_path: Path):
     _scatter(tmp_path)
     plan = build_plan(tmp_path, audit_docs(tmp_path))
