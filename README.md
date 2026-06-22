@@ -28,9 +28,15 @@ Doctyze does **not** call an LLM or need an API key. It brings the playbook (ski
 doctyze init                    # guided front door: scaffold + install skills + next steps
 doctyze consolidate [--apply]   # scattered docs -> canonical docs/ (propose, then apply)
 doctyze bootstrap               # scaffold structure + hand a generation manifest to your agent
+doctyze index                   # build docs/ navigation (table of contents) for humans + agents
 doctyze distribute              # fan skills out to .claude/skills, .cursor/rules, AGENTS.md
 doctyze watch [--install]       # flag docs whose anchored code changed (warn-first pre-commit hook)
 ```
+
+Your agent runs the generation (the `doctyze` skill chains all of the above);
+the CLI handles the deterministic mechanics. Generated docs land in a canonical
+`docs/` tree — `specs/`, `architecture/{diagrams,decisions}/`, `runbooks/`,
+`observability/`, `guides/`, `skills/` — with a `docs/index.md` table of contents.
 
 Generated docs carry a freshness **anchor** declaring which code makes them stale:
 

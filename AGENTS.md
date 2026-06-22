@@ -13,7 +13,7 @@ Doctyze generates and maintains a documentation context layer for any repo, any 
 ## Layout
 
 - `doctyze/` — the Python package (deterministic engine, no LLM)
-  - `cli.py` — `init`, `consolidate`, `bootstrap`, `distribute`, `watch` (thin presenters over `api.py`)
+  - `cli.py` — `init`, `consolidate`, `bootstrap`, `index`, `distribute`, `watch` (thin presenters over `api.py`)
   - `consolidate/` — audit → plan → apply (non-destructive)
   - `generate/` — stack detection, structure scaffold, CodeBoarding adapter, manifest
   - `distribute/` — fan-out skills to agent files
