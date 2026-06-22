@@ -27,8 +27,16 @@ def _title_and_summary(text: str) -> tuple[str | None, str]:
     title = m.group(1).strip()
     for line in body[m.end():].splitlines():
         s = line.strip()
-        if s and not s.startswith(("#", ">", "|", "```", "<!--")):
-            return title, s.rstrip(".")
+        if not s or s.startswith(("#", ">", "|", "```", "<!--")):
+            continue
+        if set(s) <= {"-", "=", "*", "_"}:  # separator / rule line
+            continue
+        if s.lower().startswith(("**status:**", "status:")):  # ADR header line — keep scanning for the gist
+            continue
+        s = s.rstrip(".")
+        if len(s) > 140:
+            s = s[:140].rstrip() + "…"
+        return title, s
     return title, ""
 
 
