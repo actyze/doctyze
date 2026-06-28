@@ -1,6 +1,6 @@
 # Doctyze
 
-**Generate and maintain a complete documentation context layer for any repo — using the LLM already in your IDE.**
+**Turn any repo into living documentation — for humans and AI agents — using the LLM already in your IDE.**
 
 [![PyPI](https://img.shields.io/pypi/v/doctyze.svg)](https://pypi.org/project/doctyze/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -10,73 +10,69 @@
 
 ## What it does
 
-Point Doctyze at any existing repository, any tech stack. It:
+Point Doctyze at any repository, any stack. Your IDE's AI assistant then:
 
-1. **Consolidates** scattered docs (loose READMEs, wiki notes, stray design files) into one canonical `docs/` structure — non-destructively.
-2. **Bootstraps** the full SDLC context layer from the code: specs, architecture docs + Mermaid diagrams, decisions (ADRs), runbooks, observability, dev/testing skills.
-3. **Maintains** it — when code changes, it flags exactly which docs are now stale and your agent refreshes them.
+1. **Consolidates** scattered docs (loose READMEs, wiki notes, design files) into one canonical `docs/` tree — non-destructively.
+2. **Generates** the missing docs from the actual code: feature specs, architecture + Mermaid diagrams, decisions (ADRs), runbooks, observability, dev/testing skills.
+3. **Keeps them fresh** — when code changes, it flags exactly which docs are now stale.
 
-The result serves both humans and AI coding agents (`AGENTS.md`, `.cursor/rules`, Claude Code skills, MCP).
+No API key. Doctyze uses the **AI you already have in your IDE** (Cursor / Claude Code / Copilot) — it never calls an LLM itself or asks for a key.
 
-## Bring your own agent — no API key
+---
 
-Doctyze does **not** call an LLM or need an API key. It brings the playbook (skills) and the deterministic mechanics (consolidation, drift detection, fan-out); the **LLM is the one already in your IDE** (Cursor / Claude Code / Copilot) or your CI agent. You run the Doctyze skill and your existing agent does the writing.
+## Get started — in your IDE (this is the way to use it)
 
-## Quick start
+You don't run Doctyze by hand. You add it to your AI assistant and **ask the assistant to do it.**
 
-**Install** (Python ≥ 3.10):
-
-```bash
-pip install doctyze
+### Claude Code
 ```
-
-> Claude Code users can instead install the plugin (bundles the skills + MCP server):
-> ```
-> /plugin marketplace add actyze/doctyze
-> /plugin install doctyze@doctyze
-> ```
-
-**Run it on your repo:**
-
-```bash
-cd your-repo
-doctyze init                  # detect stack, scaffold docs/, install the Doctyze skills
-doctyze consolidate --apply   # organize existing scattered docs (review the plan first)
+/plugin marketplace add actyze/doctyze
+/plugin install doctyze@doctyze
 ```
+Then, in your repo, just say:
+> **/doctyze**  — or — "set up the docs for this repo with Doctyze"
 
-**Generate the docs** — in your IDE (Cursor / Claude Code), run the **`doctyze`** skill. Your agent reads the code and writes the specs, diagrams, runbooks, ADRs, and skills, grounded in the real code. Then:
+Your assistant reads the code, organizes existing docs, writes the new ones, and builds a navigable `docs/` — using its own model. That's it.
 
+### Cursor / any MCP-capable assistant
+Add the Doctyze MCP server (no install — `uvx` fetches it on demand):
 ```bash
-doctyze index                 # build the docs/ table of contents (docs/index.md)
-doctyze watch --install       # keep docs fresh on every commit (warn-first hook)
+# the server exposes the deterministic tools; your assistant brings the LLM
+uvx --from "doctyze[mcp]" doctyze-mcp
 ```
+Register that command as an MCP server in your IDE, then tell your assistant: *"set up the docs for this repo with Doctyze."*
 
-## Commands
+**What you get:** a `docs/` tree — `specs/`, `architecture/{diagrams,decisions}/`, `runbooks/`, `observability/`, `guides/`, `skills/` — with a `docs/index.md` table of contents, fanned out to `AGENTS.md` / `.cursor/rules` / Claude Code skills so every assistant on the repo inherits the context.
 
-```bash
-doctyze init                    # guided front door: scaffold + install skills + next steps
-doctyze consolidate [--apply]   # scattered docs -> canonical docs/ (propose, then apply)
-doctyze bootstrap               # scaffold structure + hand a generation manifest to your agent
-doctyze index                   # build docs/ navigation (table of contents) for humans + agents
-doctyze distribute              # fan skills out to .claude/skills, .cursor/rules, AGENTS.md
-doctyze watch [--install]       # flag docs whose anchored code changed (warn-first pre-commit hook)
-```
-
-Generated docs land in a canonical `docs/` tree — `specs/`, `architecture/{diagrams,decisions}/`, `runbooks/`, `observability/`, `guides/`, `skills/` — with a `docs/index.md` table of contents. Each generated doc carries a freshness **anchor** declaring which code makes it stale:
-
+Each generated doc carries a freshness **anchor** so a code change flags the *specific* docs it makes stale:
 ```yaml
 ---
 doctyze:
   artifact: spec
   generated_by: write-spec
   affects: [src/payments/**]
-  last_verified: 2026-06-22
+  last_verified: 2026-06-28
 ---
 ```
 
+---
+
+## For CI & automation (optional)
+
+The same operations are a small CLI, for pipelines and scripting (this is what the assistant calls under the hood — you don't need it for normal use):
+
+```bash
+pip install doctyze
+doctyze --help     # init · consolidate · bootstrap · index · distribute · watch
+```
+
+Wire `doctyze watch` into a pre-commit hook or PR check to keep docs from drifting in CI. These commands are **deterministic** (file moves, drift detection) and never call an LLM — generation stays with your IDE/CI agent.
+
+---
+
 ## How it's built
 
-A deterministic Python engine (no LLM, no key) + agent-run generation skills. CLI and MCP server are thin presenters over one service layer. See `CONTRIBUTING.md`, and `docs/architecture/decisions/0003-pivot-to-context-layer-generator.md` for the design rationale.
+A deterministic Python engine (no LLM, no key) exposed as both an MCP server and a CLI, plus agent-run generation skills. See `CONTRIBUTING.md` and `docs/architecture/decisions/0003-pivot-to-context-layer-generator.md`.
 
 ## License
 
