@@ -2,7 +2,6 @@
 doctyze:
   artifact: runbook
   generated_by: write-runbook
-  source: [pyproject.toml]
   affects: [pyproject.toml, .github/workflows/**, scripts/**, action.yml]
   last_verified: '2026-06-15'
 ---
@@ -26,6 +25,7 @@ CI is defined in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
 doctyze init <path>          # scaffold + install skills
 doctyze consolidate <path>   # propose; add --apply to execute
 doctyze bootstrap <path>     # scaffold + manifest
+doctyze index <path>         # build docs/ table of contents
 doctyze distribute <path>    # fan skills to agent files
 doctyze watch <path>         # flag stale docs; --install for the hook
 ```
@@ -36,14 +36,21 @@ doctyze watch <path>         # flag stale docs; --install for the hook
 ./scripts/sync-plugin-skills.sh   # regenerate plugins/doctyze/skills/
 ```
 
-## Build & release (deployment)
+## Release
+
+Doctyze is published on PyPI as [`doctyze`](https://pypi.org/project/doctyze/) and
+releases via **GitHub Actions Trusted Publishing** (no tokens). To cut a release:
+
 ```bash
-pip wheel . -w dist --no-deps     # build the wheel (ships skills via package-data)
+# 1. bump the version in pyproject.toml + doctyze/__init__.py, update CHANGELOG
+# 2. commit, then tag and push:
+git tag -a vX.Y.Z -m "Doctyze vX.Y.Z" && git push origin vX.Y.Z
 ```
-Release steps (see `docs/planning/DOCTYZE_V3_BUILD_PLAN.md`):
-1. Build & verify the wheel (`SKILL.md` files must be present inside it).
-2. Publish to PyPI (`doctyze`) — *pending account/token*.
-3. Push the repo so the Claude Code marketplace (`.claude-plugin/marketplace.json`) resolves; submit to `claude-plugins-community`.
+
+The tag triggers [`.github/workflows/release.yml`](../../.github/workflows/release.yml),
+which builds the sdist+wheel and publishes to PyPI via OIDC. The wheel ships the
+`SKILL.md` files via `package-data`. The repo itself is the Claude Code plugin
+marketplace (`.claude-plugin/marketplace.json`).
 
 ## Reusable CI action
 [`action.yml`](../../action.yml) is a composite GitHub Action that installs Doctyze and runs the freshness check on PRs (use `actions/checkout` with `fetch-depth: 0` so `git diff` sees the base).

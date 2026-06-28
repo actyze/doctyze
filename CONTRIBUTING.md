@@ -7,7 +7,7 @@ Doctyze generates and maintains a documentation context layer for any repo, usin
 ## Project shape
 
 - `doctyze/` — the Python package (deterministic engine; **no LLM, no API key**)
-  - `cli.py` — `init`, `consolidate`, `bootstrap`, `distribute`, `watch`
+  - `cli.py` — `init`, `consolidate`, `bootstrap`, `index`, `distribute`, `watch`
   - `consolidate/`, `generate/`, `distribute/`, `freshness/` — the four jobs
   - `skills/` — **canonical** agent-run generation skills (the product surface)
   - `mcp_server.py` — MCP server exposing the deterministic tools

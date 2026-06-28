@@ -2,7 +2,6 @@
 doctyze:
   artifact: architecture
   generated_by: write-architecture
-  source: [doctyze/]
   affects: [doctyze/**, pyproject.toml]
   last_verified: '2026-06-15'
 ---
@@ -20,7 +19,9 @@ Doctyze is a **deterministic Python engine** that generates and maintains a docu
 | **Distribute** | [`doctyze/distribute/`](../../doctyze/distribute/) | Fan the canonical skills out to `.claude/skills`, `.cursor/rules`, and an `AGENTS.md` block. |
 | **Freshness** | [`doctyze/freshness/`](../../doctyze/freshness/) | Map changed code to the docs it invalidates (via anchors + git diff), write a refresh manifest, install a warn-first pre-commit hook. |
 
-A single **service layer** ([`doctyze/api.py`](../../doctyze/api.py)) implements each job once. The CLI ([`doctyze/cli.py`](../../doctyze/cli.py), commands `init`, `consolidate`, `bootstrap`, `distribute`, `watch`) and the MCP server ([`doctyze/mcp_server.py`](../../doctyze/mcp_server.py)) are both thin presenters over `api.py`, so the two entry points can't drift.
+Plus **`index`** ([`doctyze/generate/index.py`](../../doctyze/generate/index.py)) — a deterministic navigation builder that writes per-section `index.md` tables and a top-level `docs/index.md` table of contents.
+
+A single **service layer** ([`doctyze/api.py`](../../doctyze/api.py)) implements each job once. The CLI ([`doctyze/cli.py`](../../doctyze/cli.py), commands `init`, `consolidate`, `bootstrap`, `index`, `distribute`, `watch`) and the MCP server ([`doctyze/mcp_server.py`](../../doctyze/mcp_server.py)) are both thin presenters over `api.py`, so the two entry points can't drift.
 
 ## The freshness anchor (the core contract)
 

@@ -2,7 +2,6 @@
 doctyze:
   artifact: diagram
   generated_by: write-architecture
-  source: [doctyze/cli.py]
   affects: [doctyze/cli.py, doctyze/consolidate/**, doctyze/generate/**, doctyze/distribute/**, doctyze/freshness/**]
   last_verified: '2026-06-15'
 ---

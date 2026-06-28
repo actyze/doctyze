@@ -38,7 +38,7 @@ body:
       label: Which area would this touch?
       multiple: true
       options:
-        - CLI (`init`, `consolidate`, `bootstrap`, `distribute`, `watch`)
+        - CLI (`init`, `consolidate`, `bootstrap`, `index`, `distribute`, `watch`)
         - Consolidation (scattered docs → canonical structure)
         - Generation skills (specs / architecture / runbooks / …)
         - Distribute (agent files: .claude/skills, .cursor/rules, AGENTS.md)

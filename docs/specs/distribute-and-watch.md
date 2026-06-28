@@ -2,7 +2,6 @@
 doctyze:
   artifact: spec
   generated_by: write-spec
-  source: [doctyze/distribute/, doctyze/freshness/]
   affects: [doctyze/distribute/**, doctyze/freshness/**]
   last_verified: '2026-06-15'
 ---

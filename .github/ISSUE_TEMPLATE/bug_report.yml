@@ -23,9 +23,9 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: |
-        1. `git clone …`
-        2. `pip install -e .`  (not yet on PyPI)
-        3. `doctyze init`
+        1. `pip install doctyze`
+        2. `cd <repo> && doctyze init`
+        3. `doctyze consolidate` / `bootstrap` / `index` / `watch` …
         4. Observe …
     validations:
       required: true
