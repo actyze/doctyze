@@ -20,27 +20,38 @@ No API key. Doctyze uses the **AI you already have in your IDE** (Cursor / Claud
 
 ---
 
-## Get started — in your IDE (this is the way to use it)
+## Get started — add it to your AI assistant, once
 
-You don't run Doctyze by hand. You add it to your AI assistant and **ask the assistant to do it.**
+Doctyze runs as an **MCP server**, so it works with **any MCP-capable assistant** — Claude Code, Cursor, Windsurf, GitHub Copilot (VS Code), and others. You add the server **once**; after that you just *ask your assistant* — you never run Doctyze by hand.
 
-### Claude Code
+The server is identical everywhere (no install needed — `uvx` fetches it on demand):
+
+```json
+{
+  "mcpServers": {
+    "doctyze": {
+      "command": "uvx",
+      "args": ["--from", "doctyze[mcp]", "doctyze-mcp"]
+    }
+  }
+}
 ```
-/plugin marketplace add actyze/doctyze
-/plugin install doctyze@doctyze
-```
-Then, in your repo, just say:
-> **/doctyze**  — or — "set up the docs for this repo with Doctyze"
 
-Your assistant reads the code, organizes existing docs, writes the new ones, and builds a navigable `docs/` — using its own model. That's it.
+**Where to add it** (one-time — each IDE has its own MCP config):
 
-### Cursor / any MCP-capable assistant
-Add the Doctyze MCP server (no install — `uvx` fetches it on demand):
-```bash
-# the server exposes the deterministic tools; your assistant brings the LLM
-uvx --from "doctyze[mcp]" doctyze-mcp
-```
-Register that command as an MCP server in your IDE, then tell your assistant: *"set up the docs for this repo with Doctyze."*
+| Assistant | How to add the server |
+|---|---|
+| **Claude Code** | `claude mcp add doctyze -- uvx --from 'doctyze[mcp]' doctyze-mcp` (terminal). *Builds with the plugin UI can instead use `/plugin marketplace add actyze/doctyze` then `/plugin install doctyze@doctyze`.* |
+| **Cursor** | add the block above to `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global) |
+| **Windsurf** | Settings → Cascade → MCP servers → add the command |
+| **VS Code / GitHub Copilot** | run **“MCP: Add Server”**, or add it to `.vscode/mcp.json` |
+
+**Then, in your repo, just say:**
+> *"set up the documentation for this repo with Doctyze"*  (Claude Code: `/doctyze`)
+
+Your assistant calls Doctyze's tools to organize existing docs, reads the code, writes the new docs, and builds a navigable `docs/` — using its own model. No API key.
+
+> The MCP server gives your assistant the **tools**. The **playbook** (how to generate good, grounded docs) ships as skills: Claude Code loads them from the plugin, and after the first run `distribute` writes them to `AGENTS.md` / `.cursor/rules` so every assistant on the repo inherits the guidance.
 
 **What you get:** a `docs/` tree — `specs/`, `architecture/{diagrams,decisions}/`, `runbooks/`, `observability/`, `guides/`, `skills/` — with a `docs/index.md` table of contents, fanned out to `AGENTS.md` / `.cursor/rules` / Claude Code skills so every assistant on the repo inherits the context.
 
