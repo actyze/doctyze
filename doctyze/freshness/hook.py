@@ -9,7 +9,13 @@ from pathlib import Path
 
 _HOOK = """#!/bin/sh
 # Doctyze freshness check (warn-only — never blocks a commit).
-command -v doctyze >/dev/null 2>&1 && doctyze watch --staged || true
+# Works whether doctyze is pip-installed (CLI on PATH) or only available via uvx
+# (the MCP-server setup, no global install).
+if command -v doctyze >/dev/null 2>&1; then
+  doctyze watch --staged || true
+elif command -v uvx >/dev/null 2>&1; then
+  uvx doctyze watch --staged || true
+fi
 exit 0
 """
 

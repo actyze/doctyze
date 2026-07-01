@@ -15,7 +15,7 @@ Doctyze's deterministic operations (audit & move scattered docs, scaffold, detec
 4. **Generate** each artifact in the manifest by **reading the actual code** and writing the doc: feature specs, architecture + Mermaid diagrams, runbooks, observability, dev/testing skills, and ADRs for decisions already embodied in the code. Add a freshness anchor to every file (see below).
 5. **Index** — `rebuild_index` to build the `docs/` table of contents (humans + agents navigate from `docs/index.md`).
 6. **Distribute** — `distribute` to fan the skills out to agent files.
-7. **Keep fresh** — thereafter, `check_freshness` (or `doctyze watch`) flags docs whose anchored code changed; regenerate those.
+7. **Keep fresh** — run `install_freshness_hook` (or `doctyze watch --install`) once to add a warn-first pre-commit hook. Thereafter `check_freshness` (which the hook runs on each commit) flags docs whose anchored code changed — regenerate those.
 
 ## Generation guidance (per artifact)
 See `write-architecture` · `write-spec` · `write-adr` · `write-runbook` · `write-observability` · `write-skills`. Ground every claim in real code (cite entry points as `path:line`), be honest about stubs/bugs, and keep anchors narrow.

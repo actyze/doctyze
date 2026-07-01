@@ -52,7 +52,18 @@ def check_freshness(path: str = ".", staged: bool = False) -> str:
     return f"{len(stale)} doc(s) may be stale:\n" + "\n".join(lines)
 
 
-_TOOLS = [consolidate_plan, consolidate_apply, bootstrap, rebuild_index, distribute, check_freshness]
+def install_freshness_hook(path: str = ".") -> str:
+    """Install the warn-first pre-commit hook that flags stale docs on every commit."""
+    hook = api.install_freshness_hook(Path(path))
+    if hook is None:
+        return "Not a git repo — no .git/hooks to install into."
+    return f"Installed the warn-first pre-commit freshness hook at {hook}. It runs `doctyze watch` (via CLI or uvx) on each commit."
+
+
+_TOOLS = [
+    consolidate_plan, consolidate_apply, bootstrap, rebuild_index,
+    distribute, check_freshness, install_freshness_hook,
+]
 
 
 def build_server():

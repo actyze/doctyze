@@ -82,3 +82,9 @@ def check_freshness(root: str | Path, *, staged: bool = False) -> list[tuple[Pat
 
     root = Path(root).resolve()
     return find_stale(root, changed_files(root, staged=staged))
+
+
+def install_freshness_hook(root: str | Path) -> Path | None:
+    from .freshness.hook import install_hook
+
+    return install_hook(Path(root).resolve())
