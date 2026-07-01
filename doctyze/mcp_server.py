@@ -77,7 +77,45 @@ def build_server():
     server = FastMCP("doctyze")
     for fn in _TOOLS:
         server.tool()(fn)
+    _register_skill_prompts(server)
     return server
+
+
+def _load_skill(path: Path) -> tuple[str, str, str]:
+    """Return (name, description, body) for a SKILL.md — the playbook, minus frontmatter."""
+    text = path.read_text(encoding="utf-8")
+    name, description, body = path.parent.name, "", text
+    if text.startswith("---"):
+        parts = text.split("---", 2)
+        if len(parts) >= 3:
+            front, body = parts[1], parts[2].lstrip("\n")
+            for line in front.splitlines():
+                if line.strip().startswith("description:"):
+                    description = line.split(":", 1)[1].strip()
+                    break
+    return name, description, body
+
+
+def _register_skill_prompts(server) -> None:
+    """Expose each Doctyze skill as an MCP prompt so ANY MCP client (not just Claude
+    Code) can invoke the guided playbook — served from the skill files, one source of truth."""
+    from .distribute.fanout import package_skills_dir
+
+    skills_dir = package_skills_dir()
+    if not skills_dir.is_dir():
+        return
+    for d in sorted(skills_dir.iterdir()):
+        skill = d / "SKILL.md"
+        if not skill.is_file():
+            continue
+        name, description, body = _load_skill(skill)
+
+        def make(text: str):
+            def prompt() -> str:
+                return text
+            return prompt
+
+        server.prompt(name=name, description=description or f"Doctyze: {name}")(make(body))
 
 
 def main() -> None:  # pragma: no cover - entry point

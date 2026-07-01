@@ -28,6 +28,22 @@ def test_build_server_requires_mcp_extra():
         m.build_server()
 
 
+def test_mcp_prompts_registered():
+    """The playbook must be served as MCP prompts (cross-IDE parity, not just Claude Code)."""
+    try:
+        import mcp  # noqa: F401
+    except ImportError:
+        pytest.skip("mcp not installed")
+    import asyncio
+
+    server = m.build_server()
+    prompts = {p.name for p in asyncio.run(server.list_prompts())}
+    assert "doctyze" in prompts, "the orchestrator playbook must be an MCP prompt"
+    assert {"write-spec", "write-architecture"} <= prompts
+    got = asyncio.run(server.get_prompt("doctyze", {}))
+    assert "consolidate_plan" in got.messages[0].content.text  # serves the real workflow
+
+
 def test_plugin_manifests_valid():
     mk = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
     assert mk["name"] and mk["plugins"][0]["name"] == "doctyze"
