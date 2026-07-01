@@ -25,29 +25,32 @@ def main() -> None:
 @main.command()
 @click.argument("path", default=".")
 def init(path: str) -> None:
-    """Guided setup: scaffold structure, install the Doctyze skills, and print next steps.
+    """One-command setup: wire the Doctyze MCP server into your IDEs, install the skills,
+    and scaffold the docs/ structure. Run once (e.g. `uvx doctyze init`), then open your
+    IDE and invoke the `doctyze` prompt/skill.
 
-    Safe: it does NOT move your existing docs (run `consolidate` for that) and does
-    NOT generate prose (your agent does that). Teammates inherit the skills once
-    you commit them.
+    Safe: project-scoped MCP config (never touches global settings, merges with any
+    servers you already have), does NOT move existing docs, does NOT generate prose.
     """
     from .generate.scaffold import ensure_structure
     from .generate.stack import detect_stack
+    from .setup import wire_mcp
 
     root = Path(path).resolve()
-    ensure_structure(root)
+    mcp_files = wire_mcp(root)
     written = api.distribute(root)
+    ensure_structure(root)
     stack = detect_stack(root)
 
-    click.echo(f"Doctyze initialized in {root.name}/ (stack: {', '.join(stack.languages) or 'unknown'}).")
+    click.echo(f"Doctyze set up in {root.name}/ (stack: {', '.join(stack.languages) or 'unknown'}).")
+    click.echo(f"  • MCP server registered for your IDEs → {', '.join(str(p.relative_to(root)) for p in mcp_files)}")
+    click.echo(f"  • Doctyze skills installed to {len(written)} agent file(s) (.claude/skills, .cursor/rules, AGENTS.md)")
     click.echo("  • canonical docs/ structure scaffolded")
-    click.echo(f"  • Doctyze skills installed to {len(written)} agent file(s) "
-               f"(.claude/skills, .cursor/rules, AGENTS.md)")
     click.echo("\nNext:")
-    click.echo("  1. git add -A && commit  → teammates inherit Doctyze on clone")
-    click.echo("  2. doctyze consolidate    → fold scattered docs into docs/ (review, then --apply)")
-    click.echo("  3. in your IDE: run the `doctyze` skill → your agent generates the docs")
-    click.echo("  4. doctyze watch --install → keep docs fresh on every commit")
+    click.echo("  1. Reload / reopen your IDE so it picks up the Doctyze MCP server.")
+    click.echo("  2. In your assistant, invoke the `doctyze` prompt (Claude Code: /doctyze) —")
+    click.echo("     it consolidates existing docs, reads the code, and writes the docs.")
+    click.echo("  3. git add -A && commit → teammates inherit Doctyze (MCP config + skills) on clone.")
 
 
 @main.command()
