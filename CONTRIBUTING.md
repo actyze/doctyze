@@ -2,7 +2,7 @@
 
 Doctyze generates and maintains a documentation context layer for any repo, using the LLM already in the developer's IDE (BYO-agent — no API key). Free and open source under Apache 2.0.
 
-> **Note:** Doctyze is mid–v3 rewrite. The previous v2 "skills-first" design is superseded (in git history) and is **not** being developed. See `docs/architecture/decisions/0003-pivot-to-context-layer-generator.md` for the why, and `docs/planning/` for the full plan.
+> **Note:** The previous v2 "skills-first" design is superseded (in git history) and is **not** being developed. See `docs/architecture/decisions/0003-pivot-to-context-layer-generator.md` for the why.
 
 ## Project shape
 

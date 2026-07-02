@@ -24,7 +24,7 @@ Pivot Doctyze to a **repo context-layer generator and maintainer**, built by **a
 - **Bootstrap** the full SDLC artifact set from code: specs, architecture docs + Mermaid architecture/integration diagrams, dev/testing skills & rules, runbooks + incident/observability docs, deployment docs.
 - **Maintain** all of it fresh via pre-commit hooks and PR-review agents.
 
-**Adopt (don't rebuild):** CodeBoarding (Mermaid diagrams), DeepWiki-Open (prose patterns — harvest only), ruler (agent-file fan-out), fiberplane/drift (staleness detection), qodo/pr-agent + Danger JS (PR agent), pre-commit/lefthook (hooks). Maintenance health verified via GitHub API on 2026-06-14 (recorded in `docs/planning/DOCTYZE_V3_PLAN.md`); hard-depend only on the healthy tier, keep fallbacks for the solo/young projects (drift, ruler).
+**Adopt (don't rebuild):** CodeBoarding (Mermaid diagrams), DeepWiki-Open (prose patterns — harvest only), ruler (agent-file fan-out), fiberplane/drift (staleness detection), qodo/pr-agent + Danger JS (PR agent), pre-commit/lefthook (hooks). Maintenance health verified via GitHub API on 2026-06-14 (recorded in the v3 planning notes, in git history); hard-depend only on the healthy tier, keep fallbacks for the solo/young projects (drift, ruler).
 
 **Build (the defensible core, no OSS does it):** grounded spec extraction, repo→skills/rules generation, scattered-doc consolidation, and the freshness loop (drift → affected artifact → regenerate).
 
@@ -61,16 +61,16 @@ Developers already have an LLM in their IDE (Cursor/Claude Code/Copilot) and org
 
 ## Implementation Plan
 
-**Build the tool first; a representative service repo is the test fixture, used only at the end.** Detailed engineering plan in `docs/planning/DOCTYZE_V3_BUILD_PLAN.md`. Milestones (all engine milestones complete, tests green):
+**Build the tool first; a representative service repo is the test fixture, used only at the end.** Detailed engineering plan in the v3 build-plan notes (in git history). Milestones (all complete, tests green, shipped to PyPI):
 - [x] **M0** — clean-rewrite scaffold (`doctyze/` installs cleanly), archive v2, salvage 5 skills
 - [x] **M1** — `consolidate` (audit → plan → apply, non-destructive, ADR-renumber, idempotent)
 - [x] **M2** — `bootstrap` (stack detect + scaffold + CodeBoarding adapter + manifest + 7 generation skills)
 - [x] **M3** — `distribute` (fan-out) + `watch` (affected-docs detector via anchors+git, warn-first hook)
 - [x] **M4** — validated end-to-end on a clean snapshot of a representative service repo
-- [ ] **Release** — PyPI + Claude Code plugin/marketplace + CI action (distribution, not engine)
+- [x] **Release** — PyPI (`doctyze`) + Claude Code plugin/marketplace + CI release workflow
 
 ## References
-- `docs/planning/DOCTYZE_V3_PLAN.md` — full plan, adopt/build map, maintenance-health table
+- v3 plan & build-plan notes (in git history) — full plan, adopt/build map, maintenance-health table
 - Grounded review & strategic options (internal research from this session)
 - [ADR-0002: Workspace Mode](./0002-workspace-mode-for-monorepo.md) (superseded direction)
 - Adopted OSS: CodeBoarding, AsyncFuncAI/deepwiki-open, intellectronica/ruler, fiberplane/drift, qodo-ai/pr-agent, pre-commit, evilmartians/lefthook
