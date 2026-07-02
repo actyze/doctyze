@@ -23,7 +23,7 @@ Doctyze generates and maintains a documentation context layer for any repo, any 
   - `setup.py` — one-command `init` wiring: registers the MCP server in IDE project configs
 - `plugins/doctyze/` — the Claude Code plugin (skills copied from `doctyze/skills/`, `.mcp.json`)
 - `.claude-plugin/marketplace.json` — this repo is also the plugin marketplace
-- `docs/` — this repo's own docs (ADRs in `architecture/decisions/`, plus specs, architecture, runbooks)
+- `docs/architecture/decisions/` — this repo's own ADRs (MADR); see ADR-0003 for the v3 pivot
 - the superseded v2 skills-first design lives in git history (not this tree; do not revive)
 
 ## Conventions
