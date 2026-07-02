@@ -8,3 +8,4 @@ Architecture Decision Records (MADR).
 | [ADR-0001: Record Architecture Decisions](0001-record-architecture-decisions.md) | **Date:** 2026-06-15 |
 | [ADR-0002: Workspace Mode for Monorepo/Multirepo Documentation](0002-workspace-mode-for-monorepo.md) | **Date:** 2026-06-10 |
 | [ADR-0003: Pivot to a Repo Context-Layer Generator (Adopt-and-Enhance)](0003-pivot-to-context-layer-generator.md) | **Date:** 2026-06-14 |
+| [ADR-0004: Warn-First — Doctyze Does Not Enforce Doc Writes](0004-warn-first-not-enforced.md) | **Date:** 2026-07-02 |

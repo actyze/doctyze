@@ -8,6 +8,6 @@ Maintained by Doctyze. Navigate by section:
 | [Specs](specs/index.md) | 3 | Feature specifications — what each capability does. |
 | [Architecture](architecture/index.md) | 1 | System architecture: components, boundaries, integrations. |
 | [Diagrams](architecture/diagrams/index.md) | 1 | Architecture & integration diagrams (Mermaid). |
-| [Decisions](architecture/decisions/index.md) | 3 | Architecture Decision Records (MADR). |
+| [Decisions](architecture/decisions/index.md) | 4 | Architecture Decision Records (MADR). |
 | [Runbooks](runbooks/index.md) | 1 | Operational runbooks, including deployment. |
 | [Observability](observability/index.md) | 0 | Incident investigations, metrics, logging, alerting. |
