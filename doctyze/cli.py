@@ -37,15 +37,22 @@ def init(path: str) -> None:
     from .setup import wire_mcp
 
     root = Path(path).resolve()
-    mcp_files = wire_mcp(root)
+    result = wire_mcp(root)
     written = api.distribute(root)
     ensure_structure(root)
     stack = detect_stack(root)
 
     click.echo(f"Doctyze set up in {root.name}/ (stack: {', '.join(stack.languages) or 'unknown'}).")
-    click.echo(f"  • MCP server registered for your IDEs → {', '.join(str(p.relative_to(root)) for p in mcp_files)}")
+    click.echo("  • MCP server registered for your IDEs → "
+               f"{', '.join(str(p.relative_to(root)) for p in result['written'])}")
     click.echo(f"  • Doctyze skills installed to {len(written)} agent file(s) (.claude/skills, .cursor/rules, AGENTS.md)")
     click.echo("  • canonical docs/ structure scaffolded")
+    if result["global_only"]:
+        tools = " + ".join(result["global_only"])
+        click.echo(f"\nNote: detected {tools} — these use a GLOBAL MCP config (no project scope).")
+        click.echo("  Add Doctyze there with the same server: uvx --from \"doctyze[mcp]\" doctyze-mcp")
+        click.echo("    Windsurf: ~/.codeium/windsurf/mcp_config.json   Cline: its \"Configure MCP Servers\" UI")
+        click.echo("  (their playbook is already covered — they read the AGENTS.md just installed.)")
     click.echo("\nNext:")
     click.echo("  1. Reload / reopen your IDE so it picks up the Doctyze MCP server.")
     click.echo("  2. In your assistant, invoke the `doctyze` prompt (Claude Code: /doctyze) —")

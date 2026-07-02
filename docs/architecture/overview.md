@@ -21,6 +21,8 @@ Doctyze is a **deterministic Python engine** that generates and maintains a docu
 
 Plus **`index`** ([`doctyze/generate/index.py`](../../doctyze/generate/index.py)) — a deterministic navigation builder that writes per-section `index.md` tables and a top-level `docs/index.md` table of contents.
 
+And **`setup`** ([`doctyze/setup.py`](../../doctyze/setup.py)) — the one-command `init` wiring: registers the Doctyze MCP server in each IDE's project config (Claude Code, Cursor, VS Code/Copilot, plus Codex and Gemini when detected), merge-safe. Global-only tools (Windsurf, Cline) are detected and reported, not written.
+
 A single **service layer** ([`doctyze/api.py`](../../doctyze/api.py)) implements each job once. The CLI ([`doctyze/cli.py`](../../doctyze/cli.py), commands `init`, `consolidate`, `bootstrap`, `index`, `distribute`, `watch`) and the MCP server ([`doctyze/mcp_server.py`](../../doctyze/mcp_server.py)) are both thin presenters over `api.py`, so the two entry points can't drift.
 
 ## The freshness anchor (the core contract)

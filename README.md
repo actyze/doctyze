@@ -28,16 +28,18 @@ In your repo (nothing to install — `uvx` fetches it on demand):
 uvx doctyze init
 ```
 
-That one command **wires Doctyze into your IDEs** — it:
-- registers the Doctyze **MCP server** in project configs (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`) — scoped to the repo and merge-safe (won't touch your other servers),
+That one command **wires Doctyze into whatever AI assistants you have** — it:
+- registers the Doctyze **MCP server** in project configs: `.mcp.json` (Claude Code), `.cursor/mcp.json` (Cursor), `.vscode/mcp.json` (VS Code / Copilot), and — if it detects them — `.codex/config.toml` (Codex) and `.gemini/settings.json` (Gemini). All repo-scoped and merge-safe (won't touch your other servers).
 - installs the **skills** (`.claude/skills`, `.cursor/rules`, `AGENTS.md`),
 - scaffolds the canonical `docs/` structure.
+
+*(Windsurf and Cline only support a global MCP config, so `init` detects them and prints how to add the server there; both read `AGENTS.md`, so their playbook is already covered.)*
 
 Then **reload your IDE** and, in your assistant, invoke the **`doctyze`** prompt (Claude Code: `/doctyze` — or just say *"set up the documentation for this repo with Doctyze"*). Your assistant organizes existing docs, reads the code, and writes the new docs — using **its own model, no API key**.
 
 Commit the result and your teammates inherit Doctyze (MCP config + skills) on `git clone` — **zero setup for them**.
 
-Works with **any MCP-capable assistant** — Claude Code, Cursor, Windsurf, GitHub Copilot (VS Code), and others. The MCP server ships both the **tools** *and* the **playbook** (as an MCP prompt), so every IDE gets the full guided workflow on the first run.
+Works with **any MCP-capable assistant** — Claude Code, Cursor, VS Code/Copilot, Codex, Gemini, Windsurf, Cline, and more. The MCP server ships both the **tools** *and* the **playbook** (as an MCP prompt), so every IDE gets the full guided workflow on the first run.
 
 <details><summary>Prefer to add the MCP server manually, or on another IDE?</summary>
 
@@ -49,8 +51,13 @@ The server is identical everywhere:
 |---|---|
 | **Claude Code** | `claude mcp add doctyze -- uvx --from 'doctyze[mcp]' doctyze-mcp` |
 | **Cursor** | add to `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global) |
-| **Windsurf** | Settings → Cascade → MCP servers |
-| **VS Code / Copilot** | run **“MCP: Add Server”**, or add to `.vscode/mcp.json` (uses a `servers` map with `"type": "stdio"`) |
+| **VS Code / Copilot** | run **“MCP: Add Server”**, or add to `.vscode/mcp.json` (a `servers` map with `"type": "stdio"`) |
+| **Codex CLI** | `codex mcp add doctyze -- uvx --from doctyze[mcp] doctyze-mcp`, or `[mcp_servers.doctyze]` in `.codex/config.toml` |
+| **Gemini CLI** | add to `.gemini/settings.json` (`mcpServers`) |
+| **Windsurf** | `~/.codeium/windsurf/mcp_config.json` (`mcpServers`) — global only |
+| **Cline** | its **“Configure MCP Servers”** UI (global) |
+
+Every entry runs the same server: `uvx --from "doctyze[mcp]" doctyze-mcp`.
 
 </details>
 

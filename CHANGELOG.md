@@ -2,6 +2,20 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
+## [0.3.2] — 2026-07-01
+
+Broader IDE coverage.
+
+### Added
+- `doctyze init` now wires more assistants, with **detection** (best-effort — binary
+  on PATH or config dir — so it only writes configs for tools you actually have):
+  **Codex** (`.codex/config.toml`, TOML `[mcp_servers.doctyze]`) and **Gemini CLI**
+  (`.gemini/settings.json`), alongside Claude Code, Cursor, and VS Code/Copilot.
+- Detects **Windsurf** and **Cline** (which only support a *global* MCP config) and
+  prints exactly how to add the server there; both already read the installed
+  `AGENTS.md`, so their playbook is covered. Config paths verified against each
+  tool's official docs.
+
 ## [0.3.1] — 2026-07-01
 
 Onboarding + cross-IDE parity.

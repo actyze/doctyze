@@ -22,13 +22,19 @@ CI is defined in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml).
 
 ## Run Doctyze on a repo
 ```bash
-doctyze init <path>          # scaffold + install skills
+doctyze init <path>          # one-command setup: wire MCP + install skills + scaffold
 doctyze consolidate <path>   # propose; add --apply to execute
 doctyze bootstrap <path>     # scaffold + manifest
 doctyze index <path>         # build docs/ table of contents
 doctyze distribute <path>    # fan skills to agent files
 doctyze watch <path>         # flag stale docs; --install for the hook
 ```
+`init` is the front door: it registers the Doctyze MCP server in each IDE's
+project config — `.mcp.json` (Claude Code), `.cursor/mcp.json` (Cursor),
+`.vscode/mcp.json` (VS Code/Copilot), plus `.codex/config.toml` (Codex) and
+`.gemini/settings.json` (Gemini) when those are detected — installs the skills,
+and scaffolds `docs/`. All configs are project-scoped and merge-safe. Windsurf and
+Cline are global-only, so `init` detects and reports them ([`setup.py`](../../doctyze/setup.py)).
 
 ## Editing skills
 `doctyze/skills/` is the **single source of truth**. After changing a skill:
