@@ -18,6 +18,21 @@ Point Doctyze at any repository, any stack. Your IDE's AI assistant then:
 
 No API key. Doctyze uses the **AI you already have in your IDE** (Cursor / Claude Code / Copilot) — it never calls an LLM itself or asks for a key.
 
+### The flow at a glance
+
+```text
+$ uvx doctyze init                 # install skills + scaffold docs/  (one time)
+  ↳ reload your IDE
+
+  in your assistant:  /doctyze      # the agent consolidates existing docs,
+  ↳ reads your code and writes:       specs · architecture + Mermaid · ADRs ·
+                                      runbooks · observability · dev/testing skills
+  ↳ runs the deterministic steps via the `doctyze` CLI — nothing to approve
+
+$ git commit                       # the warn-first hook flags exactly which docs
+  ↳ a code change made stale, so you regenerate only those
+```
+
 ---
 
 ## Get started — one command
@@ -28,10 +43,10 @@ In your repo (nothing to install — `uvx` fetches it on demand):
 uvx doctyze init
 ```
 
-That one command **wires Doctyze into whatever AI assistants you have** — it:
-- registers the Doctyze **MCP server** in project configs: `.mcp.json` (Claude Code), `.cursor/mcp.json` (Cursor), `.vscode/mcp.json` (VS Code / Copilot), and — if it detects them — `.codex/config.toml` (Codex) and `.gemini/settings.json` (Gemini). All repo-scoped and merge-safe (won't touch your other servers).
-- installs the **skills** (`.claude/skills`, `.cursor/rules`, `AGENTS.md`),
-- scaffolds the canonical `docs/` structure.
+That one command **sets Doctyze up in your repo** — it:
+- installs the **skills / playbook** your assistant runs (`.claude/skills`, `.cursor/rules`, `AGENTS.md`) — this is what powers the `doctyze` prompt,
+- scaffolds the canonical `docs/` structure,
+- registers the Doctyze **MCP server** in project configs (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, and — if detected — `.codex/config.toml`, `.gemini/settings.json`) as an **optional, faster transport** for the deterministic steps. All repo-scoped and merge-safe (won't touch your other servers).
 
 *(Windsurf and Cline only support a global MCP config, so `init` detects them and prints how to add the server there; both read `AGENTS.md`, so their playbook is already covered.)*
 
@@ -41,7 +56,7 @@ Then **reload your IDE** and invoke the **`doctyze`** prompt (Claude Code: `/doc
 
 Commit the result and your teammates inherit Doctyze (MCP config + skills) on `git clone` — **zero setup for them**.
 
-Works with **any MCP-capable assistant** — Claude Code, Cursor, VS Code/Copilot, Codex, Gemini, Windsurf, Cline, and more. The MCP server ships both the **tools** *and* the **playbook** (as an MCP prompt), so every IDE gets the full guided workflow on the first run.
+Works with **any AI assistant** — Claude Code, Cursor, VS Code/Copilot, Codex, Gemini, Windsurf, Cline, and more. The playbook reaches every IDE through the installed skills / rules / `AGENTS.md` (no setup, no approval); the MCP server *additionally* serves it as a prompt and exposes the deterministic tools for MCP-native clients that prefer them.
 
 <details><summary>Prefer to add the MCP server manually, or on another IDE?</summary>
 

@@ -19,8 +19,8 @@ Doctyze generates and maintains a documentation context layer for any repo, any 
   - `distribute/` — fan-out skills to agent files
   - `freshness/` — anchors, the affected-docs detector, regenerate, hook
   - `skills/` — **canonical** agent-run generation skills (the product surface)
-  - `mcp_server.py` — MCP server (exposes the deterministic tools + serves skills as prompts)
-  - `setup.py` — one-command `init` wiring: registers the MCP server in IDE project configs
+  - `mcp_server.py` — MCP server (exposes the deterministic tools + serves skills as prompts). Optional transport: the `doctyze` skill defaults to the CLI (`uvx doctyze …`, no approval); MCP is the faster opt-in. See ADR-0005.
+  - `setup.py` — one-command `init` wiring: installs skills + scaffolds `docs/`, and registers the MCP server in IDE project configs (optional transport)
 - `plugins/doctyze/` — the Claude Code plugin (skills copied from `doctyze/skills/`, `.mcp.json`)
 - `.claude-plugin/marketplace.json` — this repo is also the plugin marketplace
 - `docs/architecture/decisions/` — this repo's own ADRs (MADR); see ADR-0003 for the v3 pivot
