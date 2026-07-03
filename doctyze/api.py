@@ -77,11 +77,20 @@ def distribute(root: str | Path) -> list[Path]:
     return _distribute(Path(root).resolve())
 
 
-def check_freshness(root: str | Path, *, staged: bool = False) -> list[tuple[Path, Anchor, list[str]]]:
+def check_freshness(
+    root: str | Path, *, staged: bool = False, base: str = "HEAD"
+) -> list[tuple[Path, Anchor, list[str]]]:
+    """Docs invalidated by changed code.
+
+    - Local default (`base="HEAD"`, `staged=False`): the *working-tree* diff — catches
+      uncommitted edits (the pre-commit hook uses `staged=True`).
+    - CI (`base="origin/main"` or `"origin/main...HEAD"`): diff the branch against its base,
+      so *committed* PR changes are detected (a fresh CI checkout has no working-tree diff).
+    """
     from .freshness.detect import changed_files, find_stale
 
     root = Path(root).resolve()
-    return find_stale(root, changed_files(root, staged=staged))
+    return find_stale(root, changed_files(root, staged=staged, base=base))
 
 
 def install_freshness_hook(root: str | Path) -> Path | None:

@@ -106,16 +106,44 @@ Wire `doctyze watch` into a pre-commit hook or PR check to keep docs from drifti
 
 ### Freshness in CI — warn or block? (you choose)
 
-Doctyze ships a GitHub Action. It's **warn-first by default** (reports stale docs, passes the check), with an **opt-in gate**:
+The check is just a CLI command, so it runs in **any CI** (GitHub, GitLab, Jenkins, CircleCI, Azure…). The GitHub Action below is only a convenience wrapper around it.
+
+```bash
+# Any CI: report only (warn-first) — the raw primitive
+doctyze watch --base "origin/$BASE_BRANCH"
+
+# Any CI: gate the merge (fail the job when a doc is stale)
+doctyze watch --base "origin/$BASE_BRANCH" --exit-code
+```
+
+> ⚠️ **In CI you must pass `--base` and fetch full history.** A CI checkout is *clean* —
+> the change is already committed — so the default working-tree diff sees nothing and the
+> check silently passes. `--base origin/<target-branch>` diffs the PR against its base so
+> committed changes are detected. Make sure the base ref is fetched (e.g. `fetch-depth: 0`,
+> or `git fetch origin <target-branch>`).
+
+**GitHub Action** (wraps the above):
 
 ```yaml
 # .github/workflows/docs-freshness.yml
 - uses: actions/checkout@v4
-  with: { fetch-depth: 0 }          # so the diff sees the base commit
-- uses: actyze/doctyze@v0            # pin a tag in real use
+  with: { fetch-depth: 0 }                 # REQUIRED so the base ref exists
+- uses: actyze/doctyze@v0                  # pin a tag in real use
   with:
-    fail-on-stale: false             # default: warn-only (report, don't block)
-    # fail-on-stale: true            # opt-in: fail the check to gate a merge
+    base: origin/${{ github.base_ref }}    # the PR's target branch
+    fail-on-stale: false                   # default: warn-only (report, don't block)
+    # fail-on-stale: true                  # opt-in: fail the check to gate a merge
+```
+
+**GitLab CI** (no Action — just the CLI):
+
+```yaml
+docs-freshness:
+  image: python:3.12
+  variables: { GIT_DEPTH: 0 }              # full history
+  script:
+    - pip install doctyze
+    - doctyze watch --base "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" --exit-code
 ```
 
 **Recommendation (best practice):**

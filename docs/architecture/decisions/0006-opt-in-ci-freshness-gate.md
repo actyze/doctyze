@@ -29,10 +29,16 @@ The question: should Doctyze support *blocking* on stale docs, and if so, where?
   `doctyze watch --staged || true; exit 0` and does **not** pass `--exit-code`.
 - **`doctyze watch` gains an opt-in `--exit-code` flag** that exits non-zero when docs are
   stale. Default remains exit 0 (warn-first).
-- **The GitHub Action gains a `fail-on-stale` input** (default `false`). When `true`, the
-  Action runs `doctyze watch --exit-code`, so the check fails and can gate a PR when marked
-  as a required status check. The team owns the branch-protection config; Doctyze owns the
-  failing exit.
+- **The gate is a CLI primitive, so it is CI-agnostic.** `doctyze watch --exit-code` runs in
+  any CI (GitHub, GitLab, Jenkins, CircleCI, Azure…). The **GitHub Action is only a
+  convenience wrapper** — it does not make the feature GitHub-only. Non-GitHub CIs call the
+  CLI directly.
+- **`watch` gains a `--base <ref>` option, required for CI correctness.** A CI checkout is
+  clean (the change is already committed), so the default working-tree diff sees nothing and
+  the check would silently pass. `--base origin/<target-branch>` diffs the PR against its base
+  so committed changes are detected. This needs full git history (e.g. `fetch-depth: 0`). The
+  GitHub Action exposes `base` and `fail-on-stale` inputs; the team owns branch protection,
+  Doctyze owns the failing exit.
 
 ## Rationale
 
@@ -58,11 +64,14 @@ The question: should Doctyze support *blocking* on stale docs, and if so, where?
 
 ## Best Practice (documented for users)
 
-- **Default / most repos:** warn-first everywhere — local hook + the Action with
-  `fail-on-stale: false`. Treat the warning as a prompt to run `/doctyze` and regenerate the
-  flagged docs.
-- **Teams that treat docs as a contract:** set `fail-on-stale: true` on the Action and mark
-  it a required check — *after* confirming anchors are narrow. Keep the local hook warn-only.
+- **Default / most repos:** warn-first everywhere — local hook + CI reporting with
+  `--base` but no `--exit-code`. Treat the warning as a prompt to run `/doctyze` and
+  regenerate the flagged docs.
+- **Teams that treat docs as a contract:** add `--exit-code` (Action: `fail-on-stale: true`)
+  and mark the check required — *after* confirming anchors are narrow. Keep the local hook
+  warn-only.
+- **Always set `--base` and fetch full history in CI**, or the check silently passes (a
+  clean checkout has no working-tree diff). This is the most common misconfiguration.
 - Never make the **local** commit blocking; it can't regenerate and it trains bypasses.
 
 ## Related ADRs

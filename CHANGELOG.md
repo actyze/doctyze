@@ -12,6 +12,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ve
   regenerate a doc, so blocking the commit just trains `--no-verify`). Recommendation +
   rationale documented as best practice in the README and [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-freshness-gate.md)
   (amending ADR-0004).
+- **`doctyze watch --base <ref>`** — diff against a git ref (e.g. `origin/main`) instead of
+  the working tree. **Required for CI:** a clean CI checkout has no working-tree diff, so
+  without `--base` the check silently reported "fresh" and never fired on a PR. The GitHub
+  Action exposes a matching `base` input; the CLI runs in any CI (GitLab/Jenkins/…), with
+  the Action being just a convenience wrapper. README documents GitHub + GitLab examples and
+  the `fetch-depth: 0` requirement.
 
 ## [0.3.3] — 2026-07-02
 

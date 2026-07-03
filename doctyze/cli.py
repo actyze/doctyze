@@ -144,12 +144,17 @@ def distribute(path: str) -> None:
 @click.option("--exit-code", "exit_code", is_flag=True,
               help="Exit non-zero if any doc is stale — opt-in, for CI merge gating. "
                    "Default (and the local pre-commit hook) stay warn-only. See ADR-0006.")
+@click.option("--base", default=None, metavar="REF",
+              help="Diff against this git ref instead of the working tree (e.g. `origin/main` "
+                   "or `origin/main...HEAD`). Required in CI, where committed PR changes are "
+                   "invisible to the default working-tree diff.")
 @click.argument("path", default=".")
-def watch(install: bool, staged: bool, exit_code: bool, path: str) -> None:
+def watch(install: bool, staged: bool, exit_code: bool, base: str | None, path: str) -> None:
     """Keep docs fresh: flag docs whose anchored code changed; delegate refresh to your agent.
 
     Warn-first by default — never blocks. `--install` adds the (warn-only) pre-commit hook.
     `--exit-code` opts into a non-zero exit for CI gating (local flow stays warn-only).
+    In CI, pass `--base <ref>` so *committed* changes on a PR are detected.
     """
     from .freshness.hook import install_hook
     from .freshness.regenerate import write_refresh_manifest
@@ -163,7 +168,7 @@ def watch(install: bool, staged: bool, exit_code: bool, path: str) -> None:
             click.echo(f"Installed warn-first freshness hook: {hook.relative_to(root)}")
         return
 
-    stale = api.check_freshness(root, staged=staged)
+    stale = api.check_freshness(root, staged=staged, base=base or "HEAD")
     if not stale:
         click.echo("Docs are fresh.")
         return

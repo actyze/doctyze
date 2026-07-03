@@ -54,6 +54,40 @@ def test_watch_exit_code_opt_in_passes_when_fresh():
         assert "Docs are fresh." in res.output
 
 
+def _init_repo_with_stale_committed_change(tmp_path):
+    """Simulate a CI PR: an anchored doc, then a *committed* change to the anchored file."""
+    import subprocess
+
+    def git(*a):
+        subprocess.run(["git", *a], cwd=tmp_path, check=True, capture_output=True)
+
+    git("init"); git("config", "user.email", "t@t.co"); git("config", "user.name", "t")
+    git("checkout", "-b", "main")
+    (tmp_path / "foo.py").write_text("def f():\n    return 1\n")
+    (tmp_path / "docs" / "specs").mkdir(parents=True)
+    (tmp_path / "docs" / "specs" / "foo.md").write_text(
+        "---\ndoctyze:\n  artifact: spec\n  generated_by: write-spec\n"
+        "  affects: [foo.py]\n  last_verified: 2026-07-03\n---\n# Foo\n"
+    )
+    git("add", "-A"); git("commit", "-m", "baseline")
+    git("checkout", "-b", "feature")
+    (tmp_path / "foo.py").write_text("def f():\n    return 2\n")
+    git("add", "-A"); git("commit", "-m", "change foo")
+
+
+def test_ci_needs_base_to_detect_committed_changes(tmp_path):
+    # ADR-0006: without --base a clean CI checkout wrongly reports fresh; --base fixes it.
+    _init_repo_with_stale_committed_change(tmp_path)
+    runner = click.testing.CliRunner()
+
+    without = runner.invoke(main, ["watch", "--exit-code", str(tmp_path)])
+    assert without.exit_code == 0 and "fresh" in without.output.lower()   # the trap
+
+    with_base = runner.invoke(main, ["watch", "--exit-code", "--base", "main", str(tmp_path)])
+    assert with_base.exit_code == 1                                        # gate fires
+    assert "may be stale" in with_base.output
+
+
 def test_local_hook_stays_warn_only(tmp_path):
     # ADR-0006: the local pre-commit hook must never gate — no --exit-code, forced exit 0.
     import subprocess

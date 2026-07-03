@@ -12,6 +12,10 @@ inputs:
     description: "Fail the check (non-zero exit) when docs are stale, to gate a merge. Default 'false' = warn-only (report but pass). See ADR-0006."
     required: false
     default: "false"
+  base:
+    description: "Git ref to diff against so *committed* PR changes are detected (a fresh checkout has no working-tree diff). For a PR, use `origin/${{ github.base_ref }}`. Requires fetch-depth: 0."
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -24,10 +28,10 @@ runs:
       run: pip install "${{ github.action_path }}"
     - name: Check documentation freshness
       shell: bash
-      # Tip: use actions/checkout with fetch-depth: 0 so git diff sees the base.
+      # IMPORTANT: use actions/checkout with `fetch-depth: 0` and set `base` on a PR,
+      # or committed changes won't be seen and the check always passes.
       run: |
-        if [ "${{ inputs.fail-on-stale }}" = "true" ]; then
-          doctyze watch "${{ inputs.path }}" --exit-code
-        else
-          doctyze watch "${{ inputs.path }}"
-        fi
+        args="${{ inputs.path }}"
+        [ -n "${{ inputs.base }}" ] && args="$args --base ${{ inputs.base }}"
+        [ "${{ inputs.fail-on-stale }}" = "true" ] && args="$args --exit-code"
+        doctyze watch $args
