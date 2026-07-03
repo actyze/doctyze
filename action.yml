@@ -8,6 +8,10 @@ inputs:
     description: "Path to the repository to check"
     required: false
     default: "."
+  fail-on-stale:
+    description: "Fail the check (non-zero exit) when docs are stale, to gate a merge. Default 'false' = warn-only (report but pass). See ADR-0006."
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
@@ -21,4 +25,9 @@ runs:
     - name: Check documentation freshness
       shell: bash
       # Tip: use actions/checkout with fetch-depth: 0 so git diff sees the base.
-      run: doctyze watch "${{ inputs.path }}"
+      run: |
+        if [ "${{ inputs.fail-on-stale }}" = "true" ]; then
+          doctyze watch "${{ inputs.path }}" --exit-code
+        else
+          doctyze watch "${{ inputs.path }}"
+        fi

@@ -102,7 +102,34 @@ pip install doctyze
 doctyze --help     # init · consolidate · bootstrap · index · distribute · watch
 ```
 
-Wire `doctyze watch` into a pre-commit hook or PR check to keep docs from drifting in CI. These commands are **deterministic** (file moves, drift detection) and never call an LLM — generation stays with your IDE/CI agent.
+Wire `doctyze watch` into a pre-commit hook or PR check to keep docs from drifting. These commands are **deterministic** (file moves, drift detection) and never call an LLM — generation stays with your IDE/CI agent.
+
+### Freshness in CI — warn or block? (you choose)
+
+Doctyze ships a GitHub Action. It's **warn-first by default** (reports stale docs, passes the check), with an **opt-in gate**:
+
+```yaml
+# .github/workflows/docs-freshness.yml
+- uses: actions/checkout@v4
+  with: { fetch-depth: 0 }          # so the diff sees the base commit
+- uses: actyze/doctyze@v0            # pin a tag in real use
+  with:
+    fail-on-stale: false             # default: warn-only (report, don't block)
+    # fail-on-stale: true            # opt-in: fail the check to gate a merge
+```
+
+**Recommendation (best practice):**
+
+- **Local pre-commit stays warn-only — always.** A hook can't regenerate a doc (that needs
+  your agent's model), so blocking the commit just trains `git commit --no-verify`. Doctyze
+  will not make the local hook blocking.
+- **Enforce at the *merge*, not the commit** — only if you want to. Set `fail-on-stale: true`
+  and mark the check **required** in branch protection. It gates the shared branch without
+  interrupting anyone's local flow.
+- **Only turn the gate on if your `affects:` anchors are narrow.** Broad anchors flag every
+  PR as "stale" and the check becomes noise people disable. Warn-first is the safe default.
+
+The full rationale is in [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-freshness-gate.md) (amending [ADR-0004](docs/architecture/decisions/0004-warn-first-not-enforced.md)).
 
 ---
 

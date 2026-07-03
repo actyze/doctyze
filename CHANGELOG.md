@@ -2,6 +2,17 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Opt-in CI freshness gate.** `doctyze watch --exit-code` exits non-zero when docs are
+  stale, and the GitHub Action gains a `fail-on-stale` input (default `false`). Lets teams
+  make stale docs a required merge check — *through Doctyze*, not bespoke scripting. Default
+  stays warn-first, and the **local pre-commit hook stays warn-only** (a hook can't
+  regenerate a doc, so blocking the commit just trains `--no-verify`). Recommendation +
+  rationale documented as best practice in the README and [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-freshness-gate.md)
+  (amending ADR-0004).
+
 ## [0.3.3] — 2026-07-02
 
 ### Changed

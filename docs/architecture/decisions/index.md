@@ -10,3 +10,4 @@ Architecture Decision Records (MADR).
 | [ADR-0003: Pivot to a Repo Context-Layer Generator (Adopt-and-Enhance)](0003-pivot-to-context-layer-generator.md) | **Date:** 2026-06-14 |
 | [ADR-0004: Warn-First — Doctyze Does Not Enforce Doc Writes](0004-warn-first-not-enforced.md) | **Date:** 2026-07-02 |
 | [ADR-0005: CLI Is the Default Transport for the Skill; MCP Is Optional](0005-cli-first-default-mcp-optional.md) | **Date:** 2026-07-03 |
+| [ADR-0006: Freshness Enforcement Is Opt-In in CI; Local Stays Warn-First](0006-opt-in-ci-freshness-gate.md) | **Date:** 2026-07-03 |

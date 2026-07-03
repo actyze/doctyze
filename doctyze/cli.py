@@ -141,11 +141,15 @@ def distribute(path: str) -> None:
 @main.command()
 @click.option("--install", is_flag=True, help="Install the warn-first pre-commit freshness hook.")
 @click.option("--staged", is_flag=True, help="Check staged changes (used by the hook).")
+@click.option("--exit-code", "exit_code", is_flag=True,
+              help="Exit non-zero if any doc is stale — opt-in, for CI merge gating. "
+                   "Default (and the local pre-commit hook) stay warn-only. See ADR-0006.")
 @click.argument("path", default=".")
-def watch(install: bool, staged: bool, path: str) -> None:
+def watch(install: bool, staged: bool, exit_code: bool, path: str) -> None:
     """Keep docs fresh: flag docs whose anchored code changed; delegate refresh to your agent.
 
-    Warn-first — never blocks. Run --install to add the pre-commit hook.
+    Warn-first by default — never blocks. `--install` adds the (warn-only) pre-commit hook.
+    `--exit-code` opts into a non-zero exit for CI gating (local flow stays warn-only).
     """
     from .freshness.hook import install_hook
     from .freshness.regenerate import write_refresh_manifest
@@ -167,6 +171,8 @@ def watch(install: bool, staged: bool, path: str) -> None:
     click.echo(f"{len(stale)} doc(s) may be stale (see {out.relative_to(root)}):")
     for f, anchor, _ in stale:
         click.echo(f"  - {f.relative_to(root)}  (regenerate: {anchor.generated_by})")
+    if exit_code:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":  # pragma: no cover

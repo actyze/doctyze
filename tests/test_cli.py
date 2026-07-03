@@ -43,3 +43,24 @@ def test_all_subcommands_run():
         with runner.isolated_filesystem():
             res = runner.invoke(main, [cmd])
             assert res.exit_code == 0, f"{cmd} failed: {res.output}"
+
+
+def test_watch_exit_code_opt_in_passes_when_fresh():
+    # --exit-code is opt-in CI gating; with no stale docs it must still exit 0.
+    runner = click.testing.CliRunner()
+    with runner.isolated_filesystem():
+        res = runner.invoke(main, ["watch", "--exit-code"])
+        assert res.exit_code == 0, res.output
+        assert "Docs are fresh." in res.output
+
+
+def test_local_hook_stays_warn_only(tmp_path):
+    # ADR-0006: the local pre-commit hook must never gate — no --exit-code, forced exit 0.
+    import subprocess
+
+    subprocess.run(["git", "init"], cwd=tmp_path, check=True, capture_output=True)
+    res = click.testing.CliRunner().invoke(main, ["watch", "--install", str(tmp_path)])
+    assert res.exit_code == 0, res.output
+    hook = (tmp_path / ".git" / "hooks" / "pre-commit").read_text()
+    assert "--exit-code" not in hook          # never gates locally
+    assert "exit 0" in hook                    # belt-and-suspenders warn-only

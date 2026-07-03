@@ -6,4 +6,4 @@ Maintained by Doctyze. Navigate by section:
 | Section | Docs | About |
 |---|---|---|
 | [Architecture](architecture/index.md) | 0 | System architecture: components, boundaries, integrations. |
-| [Decisions](architecture/decisions/index.md) | 5 | Architecture Decision Records (MADR). |
+| [Decisions](architecture/decisions/index.md) | 6 | Architecture Decision Records (MADR). |
