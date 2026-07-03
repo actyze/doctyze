@@ -35,7 +35,9 @@ That one command **wires Doctyze into whatever AI assistants you have** — it:
 
 *(Windsurf and Cline only support a global MCP config, so `init` detects them and prints how to add the server there; both read `AGENTS.md`, so their playbook is already covered.)*
 
-Then **reload your IDE** and, in your assistant, invoke the **`doctyze`** prompt (Claude Code: `/doctyze` — or just say *"set up the documentation for this repo with Doctyze"*). Your assistant organizes existing docs, reads the code, and writes the new docs — using **its own model, no API key**.
+Then **reload your IDE** and invoke the **`doctyze`** prompt (Claude Code: `/doctyze` — or just say *"set up the documentation for this repo with Doctyze"*). Your assistant organizes existing docs, reads the code, and writes the new docs — using **its own model, no API key**. The deterministic steps run via the `doctyze` CLI (over `uvx`), so **there's nothing to approve** — it works right after reload.
+
+> **Optional — faster MCP tools instead of the CLI.** `init` also registers Doctyze as an MCP server. To use it, **approve the server once**: project-scoped MCP servers need a one-time OK before their tools load, so reloading alone isn't enough (Claude Code: run `/mcp` → select `doctyze` → **Enable**; Cursor: Settings → MCP; VS Code: **Start** the server when prompted). The `doctyze` prompt works either way.
 
 Commit the result and your teammates inherit Doctyze (MCP config + skills) on `git clone` — **zero setup for them**.
 

@@ -1,9 +1,17 @@
 """Wire the Doctyze MCP server into a project's IDE configs (one-command setup).
 
-Writes **project-level** MCP config so whatever assistant you open the repo with picks
-up Doctyze's tools + prompts. Project scope is deliberate: safe (never touches global
-settings), committable (teammates inherit it), and merge-preserving (won't clobber
-other servers). Config paths/schemas verified against each tool's official docs.
+Writes **project-level** MCP config so whatever assistant you open the repo with can
+pick up Doctyze's tools + prompts. Project scope is deliberate: safe (never touches
+global settings), committable (teammates inherit it), and merge-preserving (won't
+clobber other servers). Config paths/schemas verified against each tool's official docs.
+
+Trade-off of project scope: most assistants gate project `.mcp.json` servers behind a
+one-time **approval** before their tools load — reloading the IDE is not enough
+(Claude Code: `/mcp` → Enable; Cursor: Settings → MCP; VS Code: Start the server).
+This is *optional*, though: the `doctyze` skill runs its deterministic steps via the
+`doctyze` CLI (over `uvx`) by default, which needs no approval — the MCP server is a
+faster alternative transport, not a requirement. `init` prints both paths; see also
+the README getting-started.
 
 - Claude Code / generic : .mcp.json                (mcpServers, JSON)
 - Cursor                : .cursor/mcp.json          (mcpServers, JSON)

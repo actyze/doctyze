@@ -2,6 +2,26 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
+## [0.3.3] — 2026-07-02
+
+### Changed
+- **CLI is now the default path for the `doctyze` skill; MCP is an optional transport.**
+  The deterministic steps (consolidate/bootstrap/index/distribute/freshness) are the same
+  code whether run via the `doctyze` CLI (`uvx doctyze …`) or the MCP tools — and doc
+  generation is always done by the model, never by either. The skill now defaults to the
+  CLI, which needs **no approval**, and treats the MCP tools as a faster opt-in. This
+  removes the first-run wall where `/doctyze` found no tools because the project-scoped
+  `.mcp.json` server hadn't been approved yet (even though `claude mcp list` showed it
+  "Connected").
+
+### Fixed
+- **Onboarding honesty about MCP approval.** `init` used to say only "reload your IDE,"
+  but most assistants gate a project `.mcp.json` server behind an explicit approval before
+  its tools load. `init` output, the `wire_mcp` docstring, and the README now (a) make the
+  CLI the no-approval default and (b) spell out the one-time approval step for anyone who
+  wants the MCP tools (Claude Code: `/mcp` → Enable; Cursor: Settings → MCP; VS Code:
+  Start the server).
+
 ## [0.3.2] — 2026-07-01
 
 Broader IDE coverage.
