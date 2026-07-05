@@ -7,3 +7,4 @@ Maintained by Doctyze. Navigate by section:
 |---|---|---|
 | [Architecture](architecture/index.md) | 0 | System architecture: components, boundaries, integrations. |
 | [Decisions](architecture/decisions/index.md) | 6 | Architecture Decision Records (MADR). |
+| [Guides](guides/index.md) | 1 | Coding/testing standards, conventions, how-to guides. |

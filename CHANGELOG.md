@@ -19,6 +19,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ve
   the Action being just a convenience wrapper. README documents GitHub + GitLab examples and
   the `fetch-depth: 0` requirement.
 
+### Docs
+- **Guide: [Checking Documentation Drift](docs/guides/checking-documentation-drift.md).**
+  Clarifies the two layers — deterministic (always-on backstop: hook + CI/PR check) vs.
+  model-assisted (for AI-in-the-loop reviews) — and gives users exactly *what to invoke and
+  how* to check semantic drift when a model is wired (interactive `/doctyze`, headless
+  `claude -p` with the existing login, or a local Ollama model), including a copy-paste
+  reference prompt. Linked from the README.
+
 ## [0.3.3] — 2026-07-02
 
 ### Changed

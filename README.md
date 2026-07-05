@@ -159,6 +159,8 @@ docs-freshness:
 
 The full rationale is in [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-freshness-gate.md) (amending [ADR-0004](docs/architecture/decisions/0004-warn-first-not-enforced.md)).
 
+**Doing AI-assisted code review?** The deterministic check flags *which* docs to revisit; when you already have a model in the loop (an IDE agent or a CI agent), you can also check *semantic* drift — does the changed functionality exist in the docs, is it net-new, has an existing doc drifted. See **[Checking Documentation Drift](docs/guides/checking-documentation-drift.md)** for exactly what to invoke and how (interactive `/doctyze`, headless `claude -p`, or a local model), plus a copy-paste reference prompt.
+
 ---
 
 ## How it's built
