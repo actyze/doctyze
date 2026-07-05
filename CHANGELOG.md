@@ -2,7 +2,7 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.3.4] — 2026-07-05
 
 ### Added
 - **Opt-in CI freshness gate.** `doctyze watch --exit-code` exits non-zero when docs are
@@ -17,7 +17,23 @@ Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Ve
   without `--base` the check silently reported "fresh" and never fired on a PR. The GitHub
   Action exposes a matching `base` input; the CLI runs in any CI (GitLab/Jenkins/…), with
   the Action being just a convenience wrapper. README documents GitHub + GitLab examples and
-  the `fetch-depth: 0` requirement.
+  the `fetch-depth: 0` requirement. A plain ref uses **merge-base (three-dot)** semantics so
+  only the branch's own changes count (base advancing after the fork no longer over-flags).
+
+### Fixed
+- **CI gate fails *closed* on an unresolvable base ref.** Previously a bad/unfetched `--base`
+  (the common `fetch-depth: 0` mistake) made `git diff` error, which was swallowed as "no
+  changes" → the gate reported "fresh" and passed. It now raises and, under `--exit-code`,
+  exits non-zero with a clear message. The local warn-only path stays tolerant.
+- **`**/` glob anchors now match the repo root.** `affects: ['**/config.py']` failed to match
+  a root-level `config.py` (leading/interior `**/` required at least one directory). Fixed to
+  gitignore semantics (zero or more directories) — closes a silent false-negative.
+- **GitHub Action hardened against shell injection / spaces.** Inputs are passed via env and
+  quoted (bash array) instead of interpolated into the run script, so paths with spaces work
+  and a crafted `base` ref can't execute commands.
+- `--staged` and `--base` are now mutually exclusive (clear usage error instead of silently
+  ignoring `--base`). Version is single-checked against `pyproject` in tests to stop the
+  `__version__`/pyproject/plugin drift (`doctyze --version` had reported a stale 0.3.2).
 
 ### Docs
 - **Guide: [Checking Documentation Drift](docs/guides/checking-documentation-drift.md).**

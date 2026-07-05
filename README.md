@@ -128,7 +128,7 @@ doctyze watch --base "origin/$BASE_BRANCH" --exit-code
 # .github/workflows/docs-freshness.yml
 - uses: actions/checkout@v4
   with: { fetch-depth: 0 }                 # REQUIRED so the base ref exists
-- uses: actyze/doctyze@v0                  # pin a tag in real use
+- uses: actyze/doctyze@v0.3.4              # pin to a released tag
   with:
     base: origin/${{ github.base_ref }}    # the PR's target branch
     fail-on-stale: false                   # default: warn-only (report, don't block)
@@ -160,6 +160,43 @@ docs-freshness:
 The full rationale is in [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-freshness-gate.md) (amending [ADR-0004](docs/architecture/decisions/0004-warn-first-not-enforced.md)).
 
 **Doing AI-assisted code review?** The deterministic check flags *which* docs to revisit; when you already have a model in the loop (an IDE agent or a CI agent), you can also check *semantic* drift — does the changed functionality exist in the docs, is it net-new, has an existing doc drifted. See **[Checking Documentation Drift](docs/guides/checking-documentation-drift.md)** for exactly what to invoke and how (interactive `/doctyze`, headless `claude -p`, or a local model), plus a copy-paste reference prompt.
+
+---
+
+## Works alongside your other tools — Graphify
+
+Doctyze and [Graphify](https://github.com/Graphify-Labs/graphify) solve **adjacent halves** of the same problem, and they compose cleanly because the seam between them is a directory of files, not an API.
+
+- **Doctyze authors the prose.** It writes the grounded artifacts — feature specs, architecture + Mermaid, ADRs, runbooks, `AGENTS.md` — by having your IDE's agent read the actual code, then keeps them consolidated and fresh. What lands on disk is a `docs/` tree of Markdown.
+- **Graphify indexes it.** It turns your code **plus** those artifacts into one queryable knowledge graph (`graph.json`) — code structure via tree-sitter AST, docs turned into concept nodes — reachable over a CLI and an MCP server.
+
+Neither reimplements the other: Doctyze has no graph or query layer, and Graphify authors no documentation. The output of one is the input of the other.
+
+| | Doctyze | Graphify (`graphifyy`) |
+|---|---|---|
+| **Job** | Generate & maintain grounded docs | Index code + docs into a queryable graph |
+| **Produces** | `docs/` Markdown (specs, ADRs, arch+Mermaid, runbooks), `AGENTS.md` | `graphify-out/graph.json` + MCP retrieval |
+| **Retrieval surface** | `affects:` anchors + `git diff` (freshness), not search | `query` / `path` / `explain` / `affected` + MCP tools |
+| **LLM usage** | BYO-agent; never calls an LLM itself | BYO-agent for docs/images; code AST is free/local |
+
+Both are **BYO-agent** — they borrow the model already in your IDE rather than shipping a key — so the pairing adds no new credentials.
+
+```bash
+# 1. Doctyze authors the docs/ tree from your code (agent-written prose)
+uvx doctyze init            # scaffold docs/, install skills, register optional MCP
+#   …then invoke /doctyze in your IDE to generate the specs/ADRs/architecture/runbooks
+
+# 2. Graphify indexes code + those docs into one graph
+uv tool install graphifyy   # note the double-y PyPI name
+graphify install            # register the skill in your assistant
+/graphify .                 # run the pipeline over the repo (code AST + docs/ extraction)
+
+# 3. Query the merged graph
+graphify query "how does auth token refresh work?"
+python -m graphify.serve graphify-out/graph.json   # or expose it to an agent over MCP
+```
+
+> **Affected-docs across both (proposed, not yet built).** Doctyze already answers "which docs did this change make stale?" deterministically via `affects:` anchors + `git diff`; Graphify ships its own `graphify affected` (reverse-BFS impact over the *code* graph). They're separate today. Using Graphify's deterministic code-dependency graph to give Doctyze *transitive* reachability — the one thing hand-written globs can't do — is a promising integration, evaluated in [ADR-0007](docs/architecture/decisions/0007-graphify-graph-for-affected-docs.md). Its doc↔code cross-links are LLM-inferred, so that layer stays advisory; the deterministic anchor+diff remains the gate.
 
 ---
 

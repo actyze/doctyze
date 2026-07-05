@@ -11,6 +11,21 @@ def test_version_present():
     assert doctyze.__version__.startswith("0.3")
 
 
+def test_version_matches_pyproject():
+    # Single source of truth: __version__ (what `doctyze --version` prints) must equal the
+    # packaged version. Prevents the __init__/pyproject/plugin drift found in the 0.3.4 audit.
+    import pathlib
+    import re
+
+    root = pathlib.Path(__file__).resolve().parent.parent
+    txt = (root / "pyproject.toml").read_text(encoding="utf-8")
+    m = re.search(r'^version\s*=\s*"([^"]+)"', txt, re.M)
+    assert m, "version not found in pyproject.toml"
+    assert doctyze.__version__ == m.group(1), (
+        f"__version__ {doctyze.__version__!r} != pyproject {m.group(1)!r} — bump both in lockstep"
+    )
+
+
 def test_no_forced_llm_dependency():
     # Doctyze must import and run without anthropic/openai installed (BYO-agent).
     import importlib
@@ -86,6 +101,25 @@ def test_ci_needs_base_to_detect_committed_changes(tmp_path):
     with_base = runner.invoke(main, ["watch", "--exit-code", "--base", "main", str(tmp_path)])
     assert with_base.exit_code == 1                                        # gate fires
     assert "may be stale" in with_base.output
+
+
+def test_ci_gate_fails_closed_on_unresolvable_base(tmp_path):
+    # ADR-0006 fix: a bad/unfetched base ref must NOT report "fresh" under --exit-code.
+    _init_repo_with_stale_committed_change(tmp_path)
+    runner = click.testing.CliRunner()
+
+    gated = runner.invoke(main, ["watch", "--exit-code", "--base", "origin/nope", str(tmp_path)])
+    assert gated.exit_code == 2                                            # fail closed
+    assert "fresh" not in gated.output.lower()
+
+    warn = runner.invoke(main, ["watch", "--base", "origin/nope", str(tmp_path)])
+    assert warn.exit_code == 0                                             # warn-only stays non-blocking
+
+
+def test_watch_staged_and_base_are_mutually_exclusive():
+    res = click.testing.CliRunner().invoke(main, ["watch", "--staged", "--base", "main"])
+    assert res.exit_code != 0
+    assert "mutually exclusive" in res.output
 
 
 def test_local_hook_stays_warn_only(tmp_path):

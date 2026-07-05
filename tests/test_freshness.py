@@ -20,6 +20,15 @@ def test_glob_matcher():
     assert not matches("pom.xml", "build.gradle")
 
 
+def test_glob_leading_and_interior_doublestar_match_root():
+    # `**/` means zero-or-more directories (gitignore semantics), so it must match root.
+    assert matches("**/config.py", "config.py")           # root-level
+    assert matches("**/config.py", "src/deep/config.py")  # nested
+    assert matches("src/**/foo.py", "src/foo.py")          # interior **/ at zero depth
+    assert matches("src/**/*.java", "src/C.java")          # (was a false negative pre-fix)
+    assert not matches("**/config.py", "config_test.py")
+
+
 def _spec(root: Path, name: str, affects: list[str]) -> None:
     p = root / "docs" / "specs" / f"{name}.md"
     p.parent.mkdir(parents=True, exist_ok=True)

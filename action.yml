@@ -30,8 +30,14 @@ runs:
       shell: bash
       # IMPORTANT: use actions/checkout with `fetch-depth: 0` and set `base` on a PR,
       # or committed changes won't be seen and the check always passes.
+      # Inputs are passed via env (never interpolated into the script) and quoted, to
+      # avoid word-splitting on paths with spaces and shell-injection via crafted refs.
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_BASE: ${{ inputs.base }}
+        INPUT_FAIL: ${{ inputs.fail-on-stale }}
       run: |
-        args="${{ inputs.path }}"
-        [ -n "${{ inputs.base }}" ] && args="$args --base ${{ inputs.base }}"
-        [ "${{ inputs.fail-on-stale }}" = "true" ] && args="$args --exit-code"
-        doctyze watch $args
+        args=("$INPUT_PATH")
+        [ -n "$INPUT_BASE" ] && args+=(--base "$INPUT_BASE")
+        [ "$INPUT_FAIL" = "true" ] && args+=(--exit-code)
+        doctyze watch "${args[@]}"

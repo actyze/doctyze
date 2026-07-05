@@ -1,7 +1,7 @@
 ---
 doctyze:
   artifact: guide
-  generated_by: write-skills
+  generated_by: doctyze
   affects:
     - doctyze/freshness/detect.py
     - doctyze/cli.py

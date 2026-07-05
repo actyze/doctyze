@@ -145,9 +145,11 @@ def distribute(path: str) -> None:
               help="Exit non-zero if any doc is stale — opt-in, for CI merge gating. "
                    "Default (and the local pre-commit hook) stay warn-only. See ADR-0006.")
 @click.option("--base", default=None, metavar="REF",
-              help="Diff against this git ref instead of the working tree (e.g. `origin/main` "
-                   "or `origin/main...HEAD`). Required in CI, where committed PR changes are "
-                   "invisible to the default working-tree diff.")
+              help="Diff against this git ref instead of the working tree (e.g. `origin/main`). "
+                   "Required in CI, where committed PR changes are invisible to the default "
+                   "working-tree diff. A plain ref uses merge-base (three-dot) semantics so only "
+                   "this branch's own changes count; pass an explicit `A..B`/`A...B` to override. "
+                   "If the ref can't be resolved, --exit-code fails closed.")
 @click.argument("path", default=".")
 def watch(install: bool, staged: bool, exit_code: bool, base: str | None, path: str) -> None:
     """Keep docs fresh: flag docs whose anchored code changed; delegate refresh to your agent.
@@ -156,6 +158,7 @@ def watch(install: bool, staged: bool, exit_code: bool, base: str | None, path: 
     `--exit-code` opts into a non-zero exit for CI gating (local flow stays warn-only).
     In CI, pass `--base <ref>` so *committed* changes on a PR are detected.
     """
+    from .freshness.detect import GitDiffError
     from .freshness.hook import install_hook
     from .freshness.regenerate import write_refresh_manifest
 
@@ -168,7 +171,22 @@ def watch(install: bool, staged: bool, exit_code: bool, base: str | None, path: 
             click.echo(f"Installed warn-first freshness hook: {hook.relative_to(root)}")
         return
 
-    stale = api.check_freshness(root, staged=staged, base=base or "HEAD")
+    if staged and base is not None:
+        raise click.UsageError(
+            "--staged and --base are mutually exclusive: --staged is the local hook path "
+            "(index vs HEAD); --base is the CI path (branch vs a ref)."
+        )
+
+    try:
+        stale = api.check_freshness(root, staged=staged, base=base or "HEAD")
+    except GitDiffError as e:
+        # A gate must fail closed: if the base ref can't be resolved, don't report
+        # "fresh". Warn-only mode surfaces the error but stays non-blocking (exit 0).
+        click.echo(f"error: {e}", err=True)
+        if exit_code:
+            raise SystemExit(2)
+        return
+
     if not stale:
         click.echo("Docs are fresh.")
         return
