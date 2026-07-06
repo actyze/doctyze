@@ -1,16 +1,18 @@
 # Doctyze
 
-**Turn any repo into living documentation — for humans and AI agents — using the LLM already in your IDE.**
+**Generate the docs a repo is missing from its code — and flag exactly which ones each change makes stale. For humans and AI agents, using the LLM already in your IDE.**
 
 [![PyPI](https://img.shields.io/pypi/v/doctyze.svg)](https://pypi.org/project/doctyze/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![AGENTS.md](https://img.shields.io/badge/AGENTS.md-supported-green)](https://agents.md)
 
+![Change a function, and Doctyze flags exactly which docs it made stale](scripts/demo/freshness-loop.gif)
+
 ---
 
 ## What it does
 
-Point Doctyze at any repository, any stack. Your IDE's AI assistant then:
+Point Doctyze at your repository — it's stack-agnostic by design. Your IDE's AI assistant then:
 
 1. **Consolidates** scattered docs (loose READMEs, wiki notes, design files) into one canonical `docs/` tree — non-destructively.
 2. **Generates** the missing docs from the actual code: feature specs, architecture + Mermaid diagrams, decisions (ADRs), runbooks, observability, dev/testing skills.
@@ -37,7 +39,7 @@ $ git commit                       # the warn-first hook flags exactly which doc
 
 ## Get started — one command
 
-In your repo (nothing to install — `uvx` fetches it on demand):
+In your repo (nothing to pre-install — `uvx` fetches Doctyze on demand; needs `uv` + network):
 
 ```bash
 uvx doctyze init
@@ -54,9 +56,9 @@ Then **reload your IDE** and invoke the **`doctyze`** prompt (Claude Code: `/doc
 
 > **Optional — faster MCP tools instead of the CLI.** `init` also registers Doctyze as an MCP server. To use it, **approve the server once**: project-scoped MCP servers need a one-time OK before their tools load, so reloading alone isn't enough (Claude Code: run `/mcp` → select `doctyze` → **Enable**; Cursor: Settings → MCP; VS Code: **Start** the server when prompted). The `doctyze` prompt works either way.
 
-Commit the result and your teammates inherit Doctyze (MCP config + skills) on `git clone` — **zero setup for them**.
+Commit the result and your teammates inherit the skills + config on `git clone` — **zero setup for the CLI/skills path** (the optional MCP tools still need a one-time approval per machine, see below).
 
-Works with **any AI assistant** — Claude Code, Cursor, VS Code/Copilot, Codex, Gemini, Windsurf, Cline, and more. The playbook reaches every IDE through the installed skills / rules / `AGENTS.md` (no setup, no approval); the MCP server *additionally* serves it as a prompt and exposes the deterministic tools for MCP-native clients that prefer them.
+Works across the major AI assistants — full support for **Claude Code, Cursor, VS Code/Copilot, Codex, Gemini**; **Windsurf and Cline** get the `AGENTS.md` playbook (+ a manual MCP add). The playbook reaches each IDE through the installed skills / rules / `AGENTS.md` (no setup, no approval); the MCP server *additionally* serves it as a prompt and exposes the deterministic tools for MCP-native clients that prefer them.
 
 <details><summary>Prefer to add the MCP server manually, or on another IDE?</summary>
 
@@ -163,6 +165,28 @@ The full rationale is in [ADR-0006](docs/architecture/decisions/0006-opt-in-ci-f
 
 ---
 
+## How Doctyze compares
+
+Documentation tooling is crowded, and much of it overlaps with pieces of Doctyze. Here is where Doctyze sits — and, just as importantly, where it doesn't.
+
+**"Why not just use Swimm, Dosu, Mintlify, or DeepWiki?"** Often you should — they're mature and solve problems Doctyze doesn't. Reach for them when you want a SaaS editor with code-coupled walkthroughs (Swimm), a hosted bot that rewrites docs on every PR with its own model (Dosu / DeepDocs), a customer-facing docs website (Mintlify), or a browsable auto-generated wiki with Q&A (DeepWiki). Doctyze makes a narrower bet: generate the typed SDLC docs a repo is missing (specs, ADRs, architecture, runbooks, observability) straight into `docs/` using the model already in your IDE, then — deterministically, with no model of its own — flag which of those docs a change touches, by matching each doc's declared `affects:` globs against the changed files. No service, no API key, no site.
+
+| | OSS / free | Runs its own LLM / needs a key | Freshness mechanism | Output | Hosted? |
+|---|---|---|---|---|---|
+| **Doctyze** | Yes (Apache-2.0) | No — BYO-agent; never calls an LLM, no key | `affects:` frontmatter anchors + `git diff`, deterministic; opt-in CI gate | In-repo `docs/` tree: specs, ADRs, architecture + Mermaid, runbooks, observability, dev/testing skills; `AGENTS.md` / rules fan-out | No — plain files in your repo |
+| **Swimm** | No — proprietary SaaS | Yes (its own AI) | Snippet-coupled auto-sync: flags when coupled code drifts | Code-coupled docs / walkthroughs (in-repo `.md`, SaaS editor) | Yes (SaaS) |
+| **Dosu / DeepDocs** | No — closed CI bot | Yes — its own LLM | Full-repo re-scan on each PR | PR comments / doc edits | Yes (hosted bot) |
+| **Mintlify** | No — hosted product | Yes (AI writer) | Manual authoring (no code-drift signal) | Customer-facing docs website | Yes |
+| **DeepWiki** | Cognition's is hosted/free; DeepWiki-Open is OSS | Yes | Re-index / regenerate the repo | Browsable wiki + Q&A | Yes (self-host for Open) |
+
+Competitor columns reflect each tool's public positioning and may change; the Doctyze column maps to shipped capabilities (the `doctyze` CLI, the `write-*` generation skills, `affects:` anchors + `doctyze watch`, and the freshness GitHub Action).
+
+**What Doctyze is NOT.** It is not a hosted documentation website (that's Mintlify), not a browsable wiki with Q&A (that's DeepWiki), not a source of external-library docs (that's Context7), and not a paid CI bot that runs its own model on every PR (that's Dosu / DeepDocs). It keeps canonical, human- and agent-readable docs *in the repo* and answers one question deterministically: which of these docs a change touches, by matching each doc's declared `affects:` anchors against the changed files.
+
+**Complementary tools.** [Context7](https://github.com/upstash/context7) serves docs for *external* libraries over MCP — the external-docs counterpart to Doctyze's *in-repo* docs, so run both. Rather than out-build the tools that already own a stage, Doctyze wires them in: it already uses CodeBoarding as an optional architecture-diagram adapter (if it isn't installed, your IDE agent draws the Mermaid diagrams instead) and ruler as an optional fan-out backend for distributing rules to many agents (Doctyze ships its own fan-out otherwise) — both degrade gracefully when absent. [Graphify](https://github.com/Graphify-Labs/graphify) is the named interop partner (below).
+
+---
+
 ## Works alongside your other tools — Graphify
 
 Doctyze and [Graphify](https://github.com/Graphify-Labs/graphify) solve **adjacent halves** of the same problem, and they compose cleanly because the seam between them is a directory of files, not an API.
@@ -197,6 +221,8 @@ python -m graphify.serve graphify-out/graph.json   # or expose it to an agent ov
 ```
 
 > **Affected-docs across both (proposed, not yet built).** Doctyze already answers "which docs did this change make stale?" deterministically via `affects:` anchors + `git diff`; Graphify ships its own `graphify affected` (reverse-BFS impact over the *code* graph). They're separate today. Using Graphify's deterministic code-dependency graph to give Doctyze *transitive* reachability — the one thing hand-written globs can't do — is a promising integration, evaluated in [ADR-0007](docs/architecture/decisions/0007-graphify-graph-for-affected-docs.md). Its doc↔code cross-links are LLM-inferred, so that layer stays advisory; the deterministic anchor+diff remains the gate.
+
+**Full walkthrough:** [Using Doctyze with Graphify](docs/guides/using-doctyze-with-graphify.md) — a step-by-step recipe (generate docs → index code+docs → query the graph), with the honest boundary between the two.
 
 ---
 

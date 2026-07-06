@@ -1,6 +1,6 @@
 ---
 name: doctyze
-description: Generate and maintain a complete documentation context layer for this repo. Orchestrates consolidate, bootstrap, generation, index, distribute, and freshness.
+description: Generate and maintain this repo's documentation context layer — specs, architecture, ADRs, runbooks — and flag which docs a code change makes stale. Orchestrates consolidate, bootstrap, generation, index, distribute, and freshness.
 ---
 # Doctyze
 

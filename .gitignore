@@ -64,3 +64,6 @@ yarn-error.log*
 .env.local
 *.local
 .doctyze/
+
+# Local planning notes (never committed)
+notes/
