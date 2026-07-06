@@ -1,0 +1,3 @@
+# Cloned upstream repos used to generate examples — never committed.
+# Only the generated docs/ trees and PROVENANCE.md files under examples/<name>/ are kept.
+.work/
