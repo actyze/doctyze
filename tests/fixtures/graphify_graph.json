@@ -1,0 +1,74 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {"schema": "graphify.node_link_data", "note": "ADR-0007 prototype fixture"},
+  "nodes": [
+    {
+      "id": "money",
+      "label": "money",
+      "file_type": "code",
+      "source_file": "money.py",
+      "source_location": "money.py:1"
+    },
+    {
+      "id": "payments_x",
+      "label": "payments.x",
+      "file_type": "code",
+      "source_file": "payments/x.py",
+      "source_location": "payments/x.py:1"
+    },
+    {
+      "id": "other",
+      "label": "other",
+      "file_type": "code",
+      "source_file": "other.py",
+      "source_location": "other.py:1"
+    },
+    {
+      "id": "spec_payments",
+      "label": "Payments Spec",
+      "file_type": "document",
+      "source_file": "docs/specs/payments.md",
+      "source_location": "docs/specs/payments.md:1"
+    },
+    {
+      "id": "spec_other",
+      "label": "Other Spec",
+      "file_type": "document",
+      "source_file": "docs/specs/other.md",
+      "source_location": "docs/specs/other.md:1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "payments_x",
+      "target": "money",
+      "relation": "imports",
+      "confidence": "DETERMINISTIC",
+      "confidence_score": 1.0,
+      "source_file": "payments/x.py",
+      "source_location": "payments/x.py:3",
+      "weight": 1.0
+    },
+    {
+      "source": "payments_x",
+      "target": "spec_payments",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "payments/x.py",
+      "source_location": "payments/x.py:1",
+      "weight": 0.85
+    },
+    {
+      "source": "other",
+      "target": "spec_other",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "other.py",
+      "source_location": "other.py:1",
+      "weight": 0.9
+    }
+  ]
+}
