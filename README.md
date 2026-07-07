@@ -37,6 +37,21 @@ $ git commit                       # the warn-first hook flags exactly which doc
 
 ---
 
+## Seen on real open-source repos
+
+Not a toy. This is the `docs/` tree Doctyze generated (with an IDE model, **no API key**) on well-known projects — each pinned to a commit, with [provenance](examples/):
+
+| Repo | Stack | What Doctyze wrote |
+|---|---|---|
+| [pallets/click](examples/click/) | Python | architecture + Mermaid, feature specs, an ADR |
+| [spf13/cobra](examples/cobra/) | Go | architecture + Mermaid, feature specs, an ADR |
+| [honojs/hono](examples/hono/) | TypeScript | architecture + Mermaid, feature specs, an ADR |
+| [spring-projects/spring-petclinic](examples/petclinic/) | Java / Spring | **full suite** — architecture, specs, ADR, runbooks, observability, dev/testing skills |
+
+Browse the full [examples gallery →](examples/). *(The hero GIF above uses a tiny synthetic payments fixture so it stays deterministic and offline — the gallery is the real thing, reproducible from the pinned commits.)*
+
+---
+
 ## Get started — one command
 
 In your repo (nothing to pre-install — `uvx` fetches Doctyze on demand; needs `uv` + network):
