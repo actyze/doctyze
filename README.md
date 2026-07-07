@@ -10,6 +10,25 @@
 
 ---
 
+## Why
+
+Every repo's docs are **missing, stale, or scattered** — usually all three. Not because teams don't care, but because keeping docs current is work with **no feedback loop**: a failing test goes red, a type error blocks the build, but stale documentation makes *no sound at all*. You change `refund()`, the refund spec is now wrong, and nothing tells you. So docs get audited **never**, or **all at once** — and neither works.
+
+The cost lands at the worst moments: a new hire onboards from a spec that describes last quarter's behavior; an incident hits and the runbook is stale; a reviewer can't tell if a change matches intent. And now there's a fourth victim — your **IDE's AI agent**, which reads those same stale docs and writes confidently wrong code from them, at machine speed. In an agent-driven workflow, docs stop being a convenience and become **load-bearing context**: accurate context in → good code out; stale context in → plausible-but-wrong out.
+
+Doctyze changes the economics:
+
+- **Docs that exist** — generated from your actual code, for the repos that never had them. One command, no writing from scratch.
+- **Docs you can trust** — every generated doc declares the code it covers (`affects:`), so a plain `git diff` names the *exact* docs a change made stale. Doc-rot becomes a signal, like a failing test. Regenerate those, not everything — and always know whether a doc is current.
+- **Context your AI agent can actually use** — the same docs fan out to `AGENTS.md` / Cursor rules / Claude Code skills, so your agent works from a maintained, accurate map of the repo instead of inferring intent from code alone.
+- **Nothing new to adopt** — no API key, no vendor model, no hosted service, no code leaving your machine. Doctyze borrows the LLM already in your IDE and writes plain Markdown into your repo. Free and Apache-2.0.
+
+The result: documentation that's actually there, that you can trust, and that both your team and your agents can rely on — kept honest by a `git diff` instead of good intentions.
+
+**→ Read the full case: [Why Doctyze](docs/why-doctyze.md).**
+
+---
+
 ## What it does
 
 Point Doctyze at your repository — it's stack-agnostic by design. Your IDE's AI assistant then:
