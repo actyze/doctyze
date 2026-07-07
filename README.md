@@ -12,7 +12,7 @@
 
 ## Why
 
-Every repo's docs are **missing, stale, or scattered** — usually all three. Not because teams don't care, but because keeping docs current is work with **no feedback loop**: a failing test goes red, a type error blocks the build, but stale documentation makes *no sound at all*. You change `refund()`, the refund spec is now wrong, and nothing tells you. So docs get audited **never**, or **all at once** — and neither works.
+Every repo's docs are **missing, stale, or scattered** — usually all three. Not because teams don't care, but because keeping docs current is work with **no feedback loop**: a failing test goes red, a type error blocks the build, but stale documentation makes *no sound at all*. Change the code, and any doc that described it is quietly wrong — with nothing to flag it. So docs get audited **never**, or **all at once** — and neither works.
 
 The cost lands at the worst moments: a new hire onboards from a spec that describes last quarter's behavior; an incident hits and the runbook is stale; a reviewer can't tell if a change matches intent. And now there's a fourth victim — your **IDE's AI agent**, which reads those same stale docs and writes confidently wrong code from them, at machine speed. In an agent-driven workflow, docs stop being a convenience and become **load-bearing context**: accurate context in → good code out; stale context in → plausible-but-wrong out.
 

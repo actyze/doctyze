@@ -27,8 +27,8 @@ feedback loop.** Which brings us to the real reason.
 
 Every other kind of quality problem announces itself. A failing test goes red. A type error blocks the
 build. A broken endpoint pages someone. Stale documentation makes **no sound at all.** You change
-`refund()`, the refund spec is now wrong, and nothing — not CI, not the reviewer, not the next reader —
-knows it happened. The doc and the code diverge in silence, and the gap only surfaces when someone is
+a function, the doc that described it is now wrong, and nothing — not CI, not the reviewer, not the next
+reader — knows it happened. The doc and the code diverge in silence, and the gap only surfaces when someone is
 already burned by it.
 
 So teams land on one of two losing strategies: audit the docs **never** (and accept that they're
