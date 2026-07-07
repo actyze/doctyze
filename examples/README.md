@@ -18,12 +18,16 @@ SHA) so anyone can reproduce it. It doubles as a before/after for the launch and
 | [click](./click/) | Python | [pallets/click](https://github.com/pallets/click) @ `16fc00e` | ✅ structured layer (arch + 3 specs + ADR) |
 | [hono](./hono/) | TypeScript | [honojs/hono](https://github.com/honojs/hono) @ `d6b1d32` | ✅ structured layer (arch + 3 specs + ADR) |
 | [cobra](./cobra/) | Go | [spf13/cobra](https://github.com/spf13/cobra) @ `ad460ea` | ✅ structured layer (arch + 3 specs + ADR) |
+| [petclinic](./petclinic/) | Java / Spring | [spring-projects/spring-petclinic](https://github.com/spring-projects/spring-petclinic) @ `51045d1` | ✅ **full suite** (arch + 3 specs + ADR + 2 runbooks + observability + skills) |
 
 <!-- As each example lands, add a row: | [name](./name/) | Python | owner/repo @sha | ✅ | -->
 
-> **Scope note:** the click entry is Doctyze's **generated structured layer** (architecture, specs, ADR)
-> reverse-engineered from click's code — not a full docs replacement, since click already ships narrative
-> docs. Later entries on doc-sparse repos will show a fuller from-scratch tree.
+> **Scope note.** The **library** entries (click / hono / cobra) show Doctyze's generated **structured
+> layer** (architecture, specs, ADR) — not a full docs replacement, since those repos already ship
+> narrative docs and, as libraries, have no deployment/ops surface. The **service** entry (petclinic)
+> is a *deployable* Spring app, so it shows the **complete suite** — including runbooks and observability
+> grounded in the real Docker/k8s/CI/Actuator config. Where a repo lacks something, the docs say so
+> rather than invent it.
 
 ### Candidate repos (planned, one per stack)
 
