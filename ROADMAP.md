@@ -39,8 +39,8 @@ The differentiated primitive; where investment compounds.
 
 ### 2. Prove it works — validation & adoption
 Output quality rides on the user's model, so evidence matters.
-- **[#20](https://github.com/actyze/doctyze/issues/20)** — examples gallery: reproducible `docs/` trees on real OSS repos across stacks (+ dogfood Doctyze itself), with provenance.
-- **[#15](https://github.com/actyze/doctyze/issues/15)** — a short demo of the current flow for the README.
+- **[#20](https://github.com/actyze/doctyze/issues/20)** — examples gallery: reproducible `docs/` trees on real OSS repos across stacks (+ dogfood Doctyze itself), with provenance. — *✅ shipped:* `examples/` covers Python (click), TypeScript (hono), Go (cobra), and a full-suite Java/Spring service (petclinic), each with provenance + a live freshness demo, via `scripts/build-example.sh`. *Still open:* dogfooding Doctyze on itself.
+- **[#15](https://github.com/actyze/doctyze/issues/15)** — a short demo of the current flow for the README. — *✅ shipped:* `scripts/demo/` renders the freshness-loop GIF (self-contained fixture + VHS tape) used in the README hero.
 
 ### 3. Lower friction — newcomer & release hygiene
 - **[#21](https://github.com/actyze/doctyze/issues/21)** — extend stack-detection signatures (C#, Swift, Elixir, Scala, C/C++, Nix, …). *good first issue.*

@@ -6,10 +6,10 @@ Real `docs/` trees Doctyze produced on well-known open-source repositories, acro
 entry is a `docs/` tree Doctyze actually generated on a public repo, with provenance (source URL + commit
 SHA) so anyone can reproduce it. It doubles as a before/after for the launch and as SEO surface.
 
-> **Honesty note.** Until an entry appears in the table below with a committed `docs/` tree, it is **not**
-> validated. Do not cite a repo/stack here that isn't listed as ✅. Today, end-to-end validation is limited
-> (see [ADR-0003](../docs/architecture/decisions/0003-pivot-to-context-layer-generator.md)); this gallery is
-> how we close that gap before making broad "any stack" claims.
+> **Honesty note.** The gallery now covers **Python, TypeScript, Go, and Java/Spring** — four distinct
+> stacks. Still, only cite a repo/stack that appears in the table below as ✅; don't claim breadth beyond
+> what's committed here. This gallery is what backs Doctyze's "stack-agnostic" claim (see
+> [ADR-0003](../docs/architecture/decisions/0003-pivot-to-context-layer-generator.md)).
 
 ## Status
 
@@ -29,16 +29,14 @@ SHA) so anyone can reproduce it. It doubles as a before/after for the launch and
 > grounded in the real Docker/k8s/CI/Actuator config. Where a repo lacks something, the docs say so
 > rather than invent it.
 
-### Candidate repos (planned, one per stack)
+### Still to add (candidates)
 
-Pick small-to-medium, widely-recognized repos so the output is easy to skim:
+Covered so far: **Python** (click), **TypeScript** (hono), **Go** (cobra), and **Java/Spring**
+(petclinic — the full suite). Good next additions, if you want more breadth:
 
-- **Python** — a focused library (e.g. a CLI or HTTP lib)
-- **TypeScript / React** — a web framework or app
-- **Go** — a service or CLI framework
 - **Rust** — a crate
-- **Java / Spring** — the stack already exercised by the existing fixture
 - **Doctyze itself** — dogfood; the strongest possible proof
+- **A second service** (Python/FastAPI, Node, or Go) — another full-suite entry to complement petclinic
 
 ## How each example is produced
 
