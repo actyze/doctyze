@@ -16,14 +16,25 @@ Then reference it under the README H1:
 ![Doctyze flags exactly which docs a code change made stale](scripts/demo/freshness-loop.gif)
 ```
 
-## What it shows
+## What it shows (the four beats)
 
-Two specs, each anchored to the code it documents:
-- `docs/specs/refunds.md` → `affects: [src/payments/refund.py]`
+Outcome-first, no anchor YAML or `sed` on screen:
+
+1. **Generate** — the `docs/` tree the IDE agent wrote from the code (`find docs`), and the refund
+   spec it produced (which documents the limit as `100.00`). Doctyze scaffolds + detects; **the
+   agent writes the prose** — so the tape shows the artifact, not a faked generation command.
+2. **Change** — the code edit is applied off-camera (`Hide`) and revealed as a real `git diff`
+   (`MAX_AUTO_REFUND` `100.00 → 500.00`), the way a developer actually changes code.
+3. **Catch** — `doctyze watch` flags **only** `refunds.md`; `money.md` and the ADR (both anchored
+   to `money.py`) stay fresh. The precision — *the exact doc, not "your docs are out of date"* — is
+   the point.
+4. **Fix** — a caption hands off to the IDE agent (`/doctyze`) to regenerate just that one doc
+   (your model, no API key).
+
+The fixture is anchored so the change hits exactly one doc:
+- `docs/specs/refunds.md` → `affects: [src/payments/refund.py]`  ← the one that goes stale
 - `docs/specs/money.md`   → `affects: [src/payments/money.py]`
-
-Editing `src/payments/refund.py` and running `doctyze watch` flags **only** `refunds.md` — not
-`money.md`. That precision (the specific stale docs, not "your docs are out of date") is the product.
+- `docs/architecture/decisions/0001-money-as-decimal.md` → `affects: [src/payments/money.py]`
 
 ## How it works
 

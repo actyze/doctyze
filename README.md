@@ -6,7 +6,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![AGENTS.md](https://img.shields.io/badge/AGENTS.md-supported-green)](https://agents.md)
 
-![Change a function, and Doctyze flags exactly which docs it made stale](https://raw.githubusercontent.com/actyze/doctyze/main/scripts/demo/freshness-loop.gif)
+![Doctyze writes a repo's docs from its code, then flags exactly which docs each change makes stale](https://raw.githubusercontent.com/actyze/doctyze/main/scripts/demo/freshness-loop.gif)
 
 ---
 
