@@ -6,3 +6,5 @@ Coding/testing standards, conventions, how-to guides.
 | Doc | Summary |
 |---|---|
 | [Guide — Checking Documentation Drift](checking-documentation-drift.md) | Doctyze checks drift in **two layers**. Use both: the deterministic layer is the always-on |
+| [Guide — Publishing your Doctyze docs](publishing-doctyze-docs.md) | Doctyze writes plain Markdown into `docs/`. It does **not** ship a website, and |
+| [Using Doctyze with Graphify](using-doctyze-with-graphify.md) | Doctyze and Graphify are adjacent halves of the same workflow. Doctyze authors the prose artifacts in your repo — specs, ADRs, architecture… |
