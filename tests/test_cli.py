@@ -1,6 +1,8 @@
 """M0 smoke tests: the package imports and the CLI runs with zero optional deps."""
 from __future__ import annotations
 
+import re
+
 import click.testing
 
 import doctyze
@@ -8,7 +10,7 @@ from doctyze.cli import main
 
 
 def test_version_present():
-    assert doctyze.__version__.startswith("0.3")
+    assert re.match(r"^\d+\.\d+(\.\d+)?", doctyze.__version__)
 
 
 def test_version_matches_pyproject():
