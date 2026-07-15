@@ -24,47 +24,55 @@ def main() -> None:
 
 @main.command()
 @click.argument("path", default=".")
-def init(path: str) -> None:
-    """One-command setup: wire the Doctyze MCP server into your IDEs, install the skills,
-    and scaffold the docs/ structure. Run once (e.g. `uvx doctyze init`), then open your
-    IDE and invoke the `doctyze` prompt/skill.
+@click.option("--with-mcp", is_flag=True,
+              help="Also register the Doctyze MCP server in your IDE configs "
+                   "(.mcp.json, .cursor/mcp.json, .vscode/mcp.json). Off by default — "
+                   "the `doctyze` CLI over uvx does the same work and needs no MCP.")
+def init(path: str, with_mcp: bool) -> None:
+    """One-command setup: install the Doctyze skills and scaffold the docs/ structure.
+    Run once (e.g. `uvx doctyze init`), then open your IDE and invoke the `doctyze`
+    prompt/skill.
 
-    Safe: project-scoped MCP config (never touches global settings, merges with any
-    servers you already have), does NOT move existing docs, does NOT generate prose.
+    Safe: does NOT move existing docs, does NOT generate prose. The docs, skills and
+    freshness workflow all run through the `doctyze` CLI (over `uvx`) — no MCP required.
+    Pass --with-mcp to additionally wire the optional Doctyze MCP server into your IDE
+    configs.
     """
     from .generate.scaffold import ensure_structure
     from .generate.stack import detect_stack
-    from .setup import wire_mcp
 
     root = Path(path).resolve()
-    result = wire_mcp(root)
     written = api.distribute(root)
     ensure_structure(root)
     stack = detect_stack(root)
 
     click.echo(f"Doctyze set up in {root.name}/ (stack: {', '.join(stack.languages) or 'unknown'}).")
-    click.echo("  • MCP server registered for your IDEs → "
-               f"{', '.join(str(p.relative_to(root)) for p in result['written'])}")
     click.echo(f"  • Doctyze skills installed to {len(written)} agent file(s) (.claude/skills, .cursor/rules, AGENTS.md)")
     click.echo("  • canonical docs/ structure scaffolded")
-    if result["global_only"]:
-        tools = " + ".join(result["global_only"])
-        click.echo(f"\nNote: detected {tools} — these use a GLOBAL MCP config (no project scope).")
-        click.echo("  Add Doctyze there with the same server: uvx --from \"doctyze[mcp]\" doctyze-mcp")
-        click.echo("    Windsurf: ~/.codeium/windsurf/mcp_config.json   Cline: its \"Configure MCP Servers\" UI")
-        click.echo("  (their playbook is already covered — they read the AGENTS.md just installed.)")
+
+    if with_mcp:
+        from .setup import wire_mcp
+        result = wire_mcp(root)
+        click.echo("  • MCP server registered for your IDEs → "
+                   f"{', '.join(str(p.relative_to(root)) for p in result['written'])}")
+        if result["global_only"]:
+            tools = " + ".join(result["global_only"])
+            click.echo(f"\nNote: detected {tools} — these use a GLOBAL MCP config (no project scope).")
+            click.echo("  Add Doctyze there with the same server: uvx --from \"doctyze[mcp]\" doctyze-mcp")
+            click.echo("    Windsurf: ~/.codeium/windsurf/mcp_config.json   Cline: its \"Configure MCP Servers\" UI")
+
     click.echo("\nNext:")
     click.echo("  1. Reload / reopen your IDE so it loads the Doctyze skills.")
     click.echo("  2. In your assistant, invoke the `doctyze` prompt (Claude Code: /doctyze) —")
     click.echo("     it consolidates existing docs, reads the code, and writes the docs.")
     click.echo("     Runs via the `doctyze` CLI over uvx — no MCP approval needed.")
-    click.echo("  3. git add -A && commit → teammates inherit Doctyze (skills + MCP config) on clone.")
-    click.echo("\nOptional — use the faster MCP tools instead of the CLI:")
-    click.echo("  approve the server once (project-scoped MCP servers need a one-time OK before")
-    click.echo("  their tools load — reloading alone is not enough):")
-    click.echo("    • Claude Code : run /mcp → select doctyze → Enable")
-    click.echo("    • Cursor      : Settings → MCP → enable doctyze")
-    click.echo("    • VS Code     : click Start on the doctyze server when prompted")
+    click.echo("  3. git add -A && commit → teammates inherit Doctyze (skills) on clone.")
+
+    if with_mcp:
+        click.echo("\nUsing the MCP tools (optional) — approve the server once:")
+        click.echo("    • Claude Code : run /mcp → select doctyze → Enable")
+        click.echo("    • Cursor      : Settings → MCP → enable doctyze")
+        click.echo("    • VS Code     : click Start on the doctyze server when prompted")
 
 
 @main.command()

@@ -2,6 +2,21 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] — 2026-07-14
+
+### Changed
+- **`doctyze init` no longer registers the MCP server by default.** It now installs the
+  skills/playbook and scaffolds `docs/` only. The MCP server is redundant with the `doctyze`
+  CLI (identical deterministic operations, over `uvx`, no approval needed), and project-scoped
+  MCP servers require a one-time per-IDE approval — so wiring it by default added setup
+  friction for a transport most users don't need. The skills, docs, and freshness workflow are
+  unaffected.
+
+### Added
+- **`doctyze init --with-mcp`** — opt-in flag that restores the previous behavior: also writes
+  `.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json` (plus detected Codex/Gemini configs). The
+  MCP server itself (`doctyze-mcp`, `setup.wire_mcp`) is unchanged and still available.
+
 ## [0.3.4] — 2026-07-05
 
 ### Added

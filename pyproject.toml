@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "doctyze"
-version = "0.3.4"
+version = "0.4.0"
 description = "Generate a repo's docs from its code — specs, architecture, ADRs, runbooks — and flag which ones a code change makes stale, using the LLM in your IDE."
 readme = "README.md"
 requires-python = ">=3.10"

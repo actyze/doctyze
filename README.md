@@ -81,16 +81,17 @@ uvx doctyze init
 
 That one command **sets Doctyze up in your repo** — it:
 - installs the **skills / playbook** your assistant runs (`.claude/skills`, `.cursor/rules`, `AGENTS.md`) — this is what powers the `doctyze` prompt,
-- scaffolds the canonical `docs/` structure,
-- registers the Doctyze **MCP server** in project configs (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, and — if detected — `.codex/config.toml`, `.gemini/settings.json`) as an **optional, faster transport** for the deterministic steps. All repo-scoped and merge-safe (won't touch your other servers).
+- scaffolds the canonical `docs/` structure.
 
-*(Windsurf and Cline only support a global MCP config, so `init` detects them and prints how to add the server there; both read `AGENTS.md`, so their playbook is already covered.)*
+The skills/playbook and the whole docs + freshness workflow run through the `doctyze` CLI (over `uvx`) — **no MCP required**. Pass `--with-mcp` if you also want `init` to register the Doctyze **MCP server** in project configs (`.mcp.json`, `.cursor/mcp.json`, `.vscode/mcp.json`, and — if detected — `.codex/config.toml`, `.gemini/settings.json`) as an optional, faster transport for the deterministic steps. It's off by default because the server is redundant with the CLI and project-scoped MCP servers need a one-time per-IDE approval.
+
+*(With `--with-mcp`: Windsurf and Cline only support a global MCP config, so `init` detects them and prints how to add the server there; both read `AGENTS.md`, so their playbook is already covered.)*
 
 Then **reload your IDE** and invoke the **`doctyze`** prompt (Claude Code: `/doctyze` — or just say *"set up the documentation for this repo with Doctyze"*). Your assistant organizes existing docs, reads the code, and writes the new docs — using **its own model, no API key**. The deterministic steps run via the `doctyze` CLI (over `uvx`), so **there's nothing to approve** — it works right after reload.
 
-> **Optional — faster MCP tools instead of the CLI.** `init` also registers Doctyze as an MCP server. To use it, **approve the server once**: project-scoped MCP servers need a one-time OK before their tools load, so reloading alone isn't enough (Claude Code: run `/mcp` → select `doctyze` → **Enable**; Cursor: Settings → MCP; VS Code: **Start** the server when prompted). The `doctyze` prompt works either way.
+> **Optional — faster MCP tools instead of the CLI.** `doctyze init --with-mcp` registers Doctyze as an MCP server. To use it, **approve the server once**: project-scoped MCP servers need a one-time OK before their tools load, so reloading alone isn't enough (Claude Code: run `/mcp` → select `doctyze` → **Enable**; Cursor: Settings → MCP; VS Code: **Start** the server when prompted). The `doctyze` prompt works either way.
 
-Commit the result and your teammates inherit the skills + config on `git clone` — **zero setup for the CLI/skills path** (the optional MCP tools still need a one-time approval per machine, see below).
+Commit the result and your teammates inherit the skills on `git clone` — **zero setup for the CLI/skills path** (the optional `--with-mcp` tools still need a one-time approval per machine, see below).
 
 Works across the major AI assistants — full support for **Claude Code, Cursor, VS Code/Copilot, Codex, Gemini**; **Windsurf and Cline** get the `AGENTS.md` playbook (+ a manual MCP add). The playbook reaches each IDE through the installed skills / rules / `AGENTS.md` (no setup, no approval); the MCP server *additionally* serves it as a prompt and exposes the deterministic tools for MCP-native clients that prefer them.
 
@@ -241,7 +242,7 @@ Both are **BYO-agent** — they borrow the model already in your IDE rather than
 
 ```bash
 # 1. Doctyze authors the docs/ tree from your code (agent-written prose)
-uvx doctyze init            # scaffold docs/, install skills, register optional MCP
+uvx doctyze init            # scaffold docs/, install skills  (--with-mcp for the optional MCP server)
 #   …then invoke /doctyze in your IDE to generate the specs/ADRs/architecture/runbooks
 
 # 2. Graphify indexes code + those docs into one graph

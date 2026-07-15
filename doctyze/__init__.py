@@ -5,4 +5,4 @@ This package contains only deterministic mechanics (doc discovery, consolidation
 drift detection, distribution) and an MCP server — it never calls an LLM itself.
 """
 
-__version__ = "0.3.4"
+__version__ = "0.4.0"
