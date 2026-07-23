@@ -34,7 +34,7 @@ The result: documentation that's actually there, that you can trust, and that bo
 Point Doctyze at your repository — it's stack-agnostic by design. Your IDE's AI assistant then:
 
 1. **Consolidates** scattered docs (loose READMEs, wiki notes, design files) into one canonical `docs/` tree — non-destructively.
-2. **Generates** the missing docs from the actual code: feature specs, architecture + Mermaid diagrams, decisions (ADRs), runbooks, observability, dev/testing skills.
+2. **Generates** the missing docs from the actual code: technical feature specs, product-owner-facing functional specs (user stories + acceptance criteria, tied to the technical spec), architecture + Mermaid diagrams, decisions (ADRs), runbooks, observability, dev/testing skills.
 3. **Keeps them fresh** — when code changes, it flags exactly which docs are now stale.
 
 No API key. Doctyze uses the **AI you already have in your IDE** (Cursor / Claude Code / Copilot) — it never calls an LLM itself or asks for a key.
@@ -46,8 +46,8 @@ $ uvx doctyze init                 # install skills + scaffold docs/  (one time)
   ↳ reload your IDE
 
   in your assistant:  /doctyze      # the agent consolidates existing docs,
-  ↳ reads your code and writes:       specs · architecture + Mermaid · ADRs ·
-                                      runbooks · observability · dev/testing skills
+  ↳ reads your code and writes:       technical specs · functional specs · architecture + Mermaid ·
+                                      ADRs · runbooks · observability · dev/testing skills
   ↳ runs the deterministic steps via the `doctyze` CLI — nothing to approve
 
 $ git commit                       # the warn-first hook flags exactly which docs

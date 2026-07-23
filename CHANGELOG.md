@@ -2,6 +2,22 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/) and [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] — 2026-07-23
+
+### Added
+- **`write-functional-spec` skill + `docs/functional-specs/` section.** A product-owner-facing
+  functional spec per capability — user stories (`As a … I want … so that …`) and
+  **Given/When/Then acceptance criteria** — reverse-engineered from the actual code and
+  **tied to the technical spec** (`docs/specs/<feature>.md`) both ways. Fills a gap teams hit
+  in practice: `write-spec` output (entry points, `file:line`, modules) is right for engineers
+  but too technical for product owners. The functional spec is deliberately implementation-free
+  (no `file:line`, no function/framework names) and technology-agnostic — user stories +
+  Gherkin-style criteria describe *what* the system does, not *how*, so the format is the same
+  across any stack. New `ArtifactKind.FUNCTIONAL_SPEC` carries the same freshness anchor as
+  every other artifact, so a functional spec goes stale exactly when the code behind it changes.
+  `bootstrap`, `index`, `distribute`, and consolidation pick it up automatically (all derive
+  from the single `SECTIONS` taxonomy).
+
 ## [0.4.0] — 2026-07-14
 
 ### Changed
