@@ -66,6 +66,25 @@ def test_index_builds_navigation(tmp_path: Path):
     assert "Foo Feature" in spec_index and "Does the foo thing" in spec_index
 
 
+def test_index_orders_by_sidebar_position(tmp_path: Path):
+    """The section TOC honors `sidebar_position` (not filename alpha), matching the published sidebar."""
+    from doctyze.generate.index import build_indexes
+    from doctyze.generate.scaffold import ensure_structure
+
+    ensure_structure(tmp_path)
+    product = tmp_path / "docs" / "product"
+    product.mkdir(parents=True, exist_ok=True)
+    # Filenames are alphabetical (apple, banana, cherry) but positions reverse that.
+    (product / "apple.md").write_text("---\nsidebar_position: 3\n---\n# Apple\n\nThird.\n")
+    (product / "banana.md").write_text("---\nsidebar_position: 1\n---\n# Banana\n\nFirst.\n")
+    (product / "cherry.md").write_text("---\nsidebar_position: 2\n---\n# Cherry\n\nSecond.\n")
+    build_indexes(tmp_path)
+    toc = (product / "index.md").read_text()
+    assert toc.index("Banana") < toc.index("Cherry") < toc.index("Apple"), (
+        "section TOC must be ordered by sidebar_position, not filename"
+    )
+
+
 def test_generation_skills_have_valid_frontmatter():
     skills_dir = Path(__file__).resolve().parent.parent / "doctyze" / "skills"
     skill_files = list(skills_dir.glob("*/SKILL.md"))

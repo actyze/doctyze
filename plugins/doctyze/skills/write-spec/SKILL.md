@@ -14,6 +14,7 @@ Write `docs/specs/<feature>.md` — one per major feature/capability.
 2. **Read it**, then document what it ACTUALLY does — cite the entry point as `path:line` and name real functions/constants.
 3. Sections: `## Purpose` · `## Entry point` (file:line) · `## Inputs` · `## Behavior` (numbered, grounded, cite modules) · `## Outputs` · `## Edge cases` · `## Related`.
 4. Be honest: flag stubs, experimental code, bugs, and where existing docs disagree with the code.
+5. If a product-area guide exists (`write-product-docs`), link to it in `## Related`: `Product docs: [../product/<feature-area>.md]`. This is the bidirectional tie — the technical spec (this) is *how*, the product doc is *what/why for the user*.
 
 ## Anchor (narrow)
 `affects:` = the specific module(s) this spec describes (e.g. `[app/agents/intent_agent.py]`), never the whole tree.
