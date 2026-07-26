@@ -18,7 +18,7 @@ Doctyze's deterministic operations (audit & move scattered docs, scaffold, detec
 7. **Keep fresh** — run `uvx doctyze watch --install` *(MCP: `install_freshness_hook`)* once to add a warn-first pre-commit hook. Thereafter `uvx doctyze watch` *(MCP: `check_freshness`)* — which the hook runs on each commit — flags docs whose anchored code changed; regenerate those.
 
 ## Generation guidance (per artifact)
-See `write-architecture` · `write-spec` · `write-functional-spec` · `write-adr` · `write-runbook` · `write-observability` · `write-skills`. Ground every claim in real code (cite entry points as `path:line`), be honest about stubs/bugs, and keep anchors narrow. `write-spec` (technical, for engineers) and `write-functional-spec` (functional, for product owners) are a linked pair per capability — write the technical spec first, then the functional one tied to it.
+See `write-architecture` · `write-spec` · `write-product-docs` · `write-adr` · `write-runbook` · `write-observability` · `write-skills`. Ground every claim in real code (cite entry points as `path:line`), be honest about stubs/bugs, and keep anchors narrow. `write-spec` is the technical layer (for engineers); `write-product-docs` is the narrative product-documentation layer (for product owners/users) — a curated Docusaurus-ready set under `docs/product/`, NOT one-per-capability and no Gherkin, linked to the technical specs. Write the technical specs first, then the product docs on top.
 
 ## The freshness anchor (add to every generated doc)
 ```yaml

@@ -7,7 +7,7 @@ from enum import Enum
 
 class ArtifactKind(str, Enum):
     SPEC = "spec"
-    FUNCTIONAL_SPEC = "functional_spec"  # product-owner-facing: user stories + acceptance criteria
+    PRODUCT_DOC = "product_doc"  # narrative product/user documentation (Docusaurus-style)
     ADR = "adr"
     RUNBOOK = "runbook"
     ARCHITECTURE = "architecture"

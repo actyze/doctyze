@@ -23,9 +23,10 @@ class Section:
 SECTIONS: dict[str, Section] = {
     "specs":         Section("docs/specs", ArtifactKind.SPEC,
                              "Feature specifications — what each capability does."),
-    "functional-specs": Section("docs/functional-specs", ArtifactKind.FUNCTIONAL_SPEC,
-                             "Functional specifications — user-facing behavior, user stories, "
-                             "and acceptance criteria (product-owner-friendly), each tied to its technical spec."),
+    "product":       Section("docs/product", ArtifactKind.PRODUCT_DOC,
+                             "Product documentation — narrative, product-owner/user-facing guides "
+                             "(overview, getting started, concepts, feature guides), Docusaurus-ready and "
+                             "tied to the technical specs."),
     "architecture":  Section("docs/architecture", ArtifactKind.ARCHITECTURE,
                              "System architecture: components, boundaries, integrations."),
     "diagrams":      Section("docs/architecture/diagrams", ArtifactKind.DIAGRAM,
@@ -54,5 +55,5 @@ CANONICAL_LAYOUT: dict[str, str] = {key: s.path for key, s in SECTIONS.items()}
 KIND_TO_DIR: dict[ArtifactKind, str] = {
     s.kind: s.path
     for key, s in SECTIONS.items()
-    if key in ("specs", "functional-specs", "decisions", "runbooks", "architecture", "diagrams", "observability", "guides", "skills")
+    if key in ("specs", "product", "decisions", "runbooks", "architecture", "diagrams", "observability", "guides", "skills")
 }
