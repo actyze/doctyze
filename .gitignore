@@ -12,6 +12,10 @@ dist/
 .installed.cfg
 MANIFEST
 
+# uv lockfile — Doctyze is a library (consumed via uvx/PyPI); consumers resolve
+# against their own env, so we don't pin ours in git.
+uv.lock
+
 # Virtual environments
 .venv/
 venv/
