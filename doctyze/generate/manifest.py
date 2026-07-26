@@ -30,7 +30,7 @@ def _existing_docs(root: Path) -> list[str]:
 _PLAN = [
     ("write-architecture", "docs/architecture/overview.md + Mermaid diagrams in docs/architecture/diagrams/"),
     ("write-spec", "one spec per major feature in docs/specs/"),
-    ("write-product-docs", "a curated but substantial set of narrative product docs in docs/product/ (overview, concepts+glossary, rich feature guides WITH grounded worked examples, use-cases) — product-owner/user-facing, Docusaurus-ready, tied to the technical specs. NOT one-per-capability, no Gherkin"),
+    ("write-product-docs", "COMPREHENSIVE functional documentation in docs/product/ — one functional doc per capability (mirror the technical specs 1:1, cover every sub-functionality), in product-owner language with NO technical detail, plus overview/concepts/use-cases. Narrative prose, not Gherkin"),
     ("write-runbook", "operational + deployment runbooks in docs/runbooks/"),
     ("write-observability", "incident/observability docs in docs/observability/"),
     ("write-skills", "dev & testing skills/rules for this stack in docs/skills/"),
