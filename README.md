@@ -50,8 +50,10 @@ $ uvx doctyze init                 # install skills + scaffold docs/  (one time)
                                       ADRs · runbooks · observability · dev/testing skills
   ↳ runs the deterministic steps via the `doctyze` CLI — nothing to approve
 
-$ git commit                       # the warn-first hook flags exactly which docs
-  ↳ a code change made stale, so you regenerate only those
+$ uvx doctyze watch --install       # add the warn-first pre-commit freshness hook  (one time)
+
+$ git commit                       # the hook (uvx doctyze watch) flags exactly which
+  ↳ docs a code change made stale, so you regenerate only those
 ```
 
 ---
